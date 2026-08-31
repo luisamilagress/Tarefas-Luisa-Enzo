@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Luisa & Enzo">
+<meta name="apple-mobile-web-app-title" content="DUO Task">
 <title>Luisa & Enzo — Tarefas</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#f6f7f9;color:#18191b}
@@ -31,7 +31,7 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 .personTop{display:flex;align-items:center;gap:10px}.personAvatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#f0f1f3;font-size:20px}
 .personNums{display:flex;gap:14px;margin-top:13px;font-size:12px;color:#6f747c}.personNums b{color:#17181a}.personCard.compact{display:flex;align-items:center;justify-content:center}
 .focusGrid{display:grid;grid-template-columns:1.6fr .8fr;gap:12px;margin:0 0 14px}.focusCard,.progressCard{background:#fff;border:1px solid #e1e4e8;border-radius:17px;padding:16px}.focusHead{display:flex;justify-content:space-between;align-items:center;gap:10px}.focusHead h3{margin:3px 0 0;font-size:17px}.eyebrow{font-size:10px;font-weight:900;letter-spacing:1.6px;color:#8a8f97}.todayList{margin-top:12px;display:grid;gap:8px}.todayItem{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#f7f8fa;border-radius:11px;padding:10px 12px}.todayTitle{font-weight:800;font-size:13px}.progressBig{font-size:36px;font-weight:900;margin-top:8px}.progressBar{height:9px;background:#eceef1;border-radius:20px;overflow:hidden;margin:13px 0}.progressBar>div{height:100%;width:0;background:#17181a;border-radius:20px;transition:.3s}.miniStats{display:flex;gap:16px;font-size:12px;color:#6f747c}.smartFilters{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}.smartFilters button{padding:8px 11px}.taskSub{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px}.created{font-size:11px;color:#9599a0}.editBtn{background:#f5f6f8}.statusDone{opacity:.72}.todayBadge{background:#eef4ff}.lateBadge{background:#fff0f0;color:#a22}
-.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0}.toolbar select,.toolbar input{width:auto;margin:0;min-width:145px}
+.brandSub{font-size:12px;color:#777;font-weight:700;margin-left:6px}.clientPick{display:grid;grid-template-columns:1fr auto;gap:8px}.clientTag{background:#17181a;color:white;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:800}.clientManagerList{display:grid;gap:7px;margin-top:14px}.clientRow{display:flex;justify-content:space-between;align-items:center;background:#f4f5f7;padding:9px 10px;border-radius:10px}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0}.toolbar select,.toolbar input{width:auto;margin:0;min-width:145px}
 
 .dailySection{background:#fff;border:1px solid #e1e4e8;border-radius:18px;padding:18px;margin:16px 0 20px}
 .dailyHead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}.dailyHead h2{margin:4px 0 5px;font-size:18px}
@@ -44,7 +44,7 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 .notice{position:fixed;right:18px;bottom:18px;z-index:30;background:#17181a;color:#fff;border-radius:13px;padding:13px 16px;max-width:330px;display:none;box-shadow:0 10px 30px #0004}.notice.show{display:block}
 #bell{position:relative}.dot{position:absolute;right:3px;top:2px;width:8px;height:8px;background:#d33;border-radius:50%;display:none}
 @media(max-width:850px){.dailyList{grid-template-columns:1fr}.dailyHead{flex-direction:column}.dailyProgress{align-items:flex-start;flex-direction:column}.dailyBar{width:100%;flex:none}.focusGrid{grid-template-columns:1fr}.people{grid-template-columns:1fr}.personCard.compact{justify-content:flex-start}.cover{height:215px}.coverText{left:18px;bottom:17px}.coverText h1{font-size:26px}.stats{grid-template-columns:repeat(2,1fr)}.board{grid-template-columns:1fr}.hero{align-items:flex-start;flex-direction:column}.wrap{padding:16px}.topin{padding:12px 16px}}
-</style>
+.chatFab{position:fixed;right:22px;bottom:22px;width:58px;height:58px;border-radius:50%;border:0;background:#17181a;color:#fff;font-size:24px;box-shadow:0 12px 30px #0004;z-index:80}.chatBadge{position:absolute;right:-2px;top:-3px;background:#d93025;color:#fff;border:2px solid #fff;width:20px;height:20px;border-radius:50%;font-size:11px;display:grid;place-items:center}.chatPanel{position:fixed;right:22px;bottom:92px;width:min(390px,calc(100vw - 24px));height:min(610px,calc(100vh - 120px));background:#fff;border:1px solid #ddd;border-radius:20px;box-shadow:0 24px 70px #0003;z-index:79;display:none;flex-direction:column;overflow:hidden}.chatPanel.show{display:flex}.chatHeader{padding:14px 15px;border-bottom:1px solid #eceef1;display:flex;justify-content:space-between;align-items:center}.chatMessages{flex:1;overflow:auto;padding:14px;background:#f6f7f9;display:flex;flex-direction:column;gap:9px}.bubble{max-width:82%;padding:10px 12px;border-radius:15px;background:#fff;border:1px solid #e3e5e8}.bubble.mine{align-self:flex-end;background:#17181a;color:#fff;border-color:#17181a}.bubble.other{align-self:flex-start}.bubbleWho{font-size:10px;font-weight:900;opacity:.65;margin-bottom:3px}.bubbleTime{font-size:9px;opacity:.55;margin-top:5px;text-align:right}.chatComposer{padding:10px;border-top:1px solid #e6e8eb;display:grid;grid-template-columns:1fr auto;gap:8px;background:#fff}.chatComposer textarea{resize:none;margin:0}.chatComposer button{align-self:stretch}@media(max-width:600px){.chatFab{right:14px;bottom:14px}.chatPanel{right:6px;bottom:80px;width:calc(100vw - 12px);height:70vh}}</style>
 </head>
 <body class="loginbg">
 <div id="login" class="login">
@@ -126,7 +126,7 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
   <div class="toolbar">
     <input id="search" placeholder="🔎 Procurar tarefa..." oninput="render()">
     <select id="filter" onchange="syncQuickFilter();render()"><option value="all">Todas as tarefas</option><option value="Luisa">Tarefas da Luisa</option><option value="Enzo">Tarefas do Enzo</option></select>
-    <select id="sort" onchange="render()"><option value="new">Mais recentes</option><option value="due">Prazo</option><option value="priority">Prioridade</option></select>
+    <select id="clientFilter" onchange="render()"><option value="all">Todos os clientes</option></select><select id="sort" onchange="render()"><option value="new">Mais recentes</option><option value="due">Prazo</option><option value="priority">Prioridade</option></select>
   </div>
 
   
@@ -158,7 +158,8 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 <h2>Nova tarefa</h2>
 <label>O que precisa ser feito?</label><input id="title" placeholder="Ex.: Criar anúncio do Onix">
 <label>Detalhes</label><textarea id="desc" rows="3" placeholder="Opcional"></textarea>
-<label>Responsável</label><select id="assignee"><option>Luisa</option><option>Enzo</option></select>
+<label>Responsável</label><select id="assignee" onchange="fillClientSelect()"><option>Luisa</option><option>Enzo</option></select>
+<label>Cliente / Conta</label><div class="clientPick"><select id="client"><option value="">Sem cliente</option></select><button class="soft" type="button" onclick="openClientModal()">+ Cliente</button></div>
 <label>Prazo</label><input id="due" type="date">
 <label>Prioridade</label><select id="priority"><option value="high">Alta</option><option value="medium" selected>Média</option><option value="low">Baixa</option></select>
 <div class="foot"><button class="soft" onclick="closeModal()">Cancelar</button><button class="primary" onclick="createTask()">Criar tarefa</button></div>
@@ -169,7 +170,8 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 <input type="hidden" id="editId">
 <label>Tarefa</label><input id="editTitle">
 <label>Detalhes</label><textarea id="editDesc" rows="3"></textarea>
-<label>Responsável</label><select id="editAssignee"><option>Luisa</option><option>Enzo</option></select>
+<label>Responsável</label><select id="editAssignee" onchange="fillEditClientSelect()"><option>Luisa</option><option>Enzo</option></select>
+<label>Cliente / Conta</label><select id="editClient"><option value="">Sem cliente</option></select>
 <label>Prazo</label><input id="editDue" type="date">
 <label>Prioridade</label><select id="editPriority"><option value="high">Alta</option><option value="medium">Média</option><option value="low">Baixa</option></select>
 <div class="foot"><button class="soft" onclick="closeEdit()">Cancelar</button><button class="primary" onclick="saveEdit()">Salvar alterações</button></div>
@@ -187,13 +189,21 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 <div class="foot"><button class="soft" onclick="closeDailyModal()">Cancelar</button><button class="primary" onclick="createDailyTask()">Adicionar</button></div>
 </div></div>
 
+<div id="clientModal" class="modal"><div class="box"><h2>Clientes / Contas</h2><p class="muted">Cadastre uma vez e depois é só escolher na tarefa.</p><label>Cliente de quem?</label><select id="clientOwner" onchange="renderClientManager()"><option>Luisa</option><option>Enzo</option></select><label>Nome do cliente</label><input id="clientName" placeholder="Ex.: DAC, Marcel"><div class="foot"><button class="soft" onclick="closeClientModal()">Cancelar</button><button class="primary" onclick="addClient()">Adicionar</button></div><div id="clientManagerList" class="clientManagerList"></div></div></div><button id="chatFab" class="chatFab" onclick="openChat()">💬<span id="chatBadge" class="chatBadge" style="display:none">!</span></button>
+<div id="chatPanel" class="chatPanel">
+  <div class="chatHeader"><div><b>💬 Conversas</b><div class="muted">Luisa ↔ Enzo</div></div><button class="soft" onclick="closeChat()">✕</button></div>
+  <div id="chatMessages" class="chatMessages"></div>
+  <div class="chatComposer"><textarea id="chatInput" rows="2" placeholder="Escreva uma mensagem..." onkeydown="chatKey(event)"></textarea><button class="primary" onclick="sendChat()">Enviar</button></div>
+</div>
 <div id="notice" class="notice"></div>
 
 <script>
 const API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-luisa-enzo";
 const DELETE_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-delete";
 const DAILY_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-diarias";
-let token=localStorage.getItem("tl_token"),me=localStorage.getItem("tl_user"),tasks=[],dailyTasks=[],previousIds=new Set(),firstLoad=true,smartFilter="all",viewPerson=null;
+const CLIENT_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-clientes";
+const CHAT_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-chat";
+let token=localStorage.getItem("tl_token"),me=localStorage.getItem("tl_user"),tasks=[],dailyTasks=[],clients=[],previousIds=new Set(),firstLoad=true,smartFilter="all",viewPerson=null;
 
 const $=id=>document.getElementById(id);
 async function req(path,opt={}){
@@ -218,7 +228,7 @@ function showApp(){
  $("mineAvatar").textContent=me==="Luisa"?"👩":"👨";$("otherAvatar").textContent=other==="Luisa"?"👩":"👨";
  $("filter").value=me;$("dailyAssignee").value=me;
  syncQuickFilter();
- load(); setInterval(load,3000);
+ loadClients(); load(); loadChat(); setInterval(load,3000);
 }
 function logout(){localStorage.removeItem("tl_token");localStorage.removeItem("tl_user");location.reload()}
 async function load(){
@@ -235,6 +245,17 @@ async function load(){
  }catch(e){}
 }
 
+async function clientReq(path="",opt={}){opt.headers={...(opt.headers||{}),"Content-Type":"application/json","Authorization":"Bearer "+token};const r=await fetch(CLIENT_API+path,opt),x=await r.json();if(!r.ok)throw Error(x.error||"Erro nos clientes");return x}
+async function loadClients(){try{clients=await clientReq();fillClientSelect();fillEditClientSelect();renderClientFilter();renderClientManager()}catch(e){}}
+function ownerClients(o){return clients.filter(c=>c.owner===o)}
+function fillClientSelect(){const o=$("assignee").value,old=$("client").value;$("client").innerHTML='<option value="">Sem cliente</option>'+ownerClients(o).map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join("");if([...$("client").options].some(x=>x.value===old))$("client").value=old}
+function fillEditClientSelect(sel){const o=$("editAssignee").value,old=sel!==undefined?sel:$("editClient").value;$("editClient").innerHTML='<option value="">Sem cliente</option>'+ownerClients(o).map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join("");if([...$("editClient").options].some(x=>x.value===old))$("editClient").value=old}
+function renderClientFilter(){if(!$("clientFilter"))return;const arr=viewPerson?ownerClients(viewPerson):clients,n=[...new Set(arr.map(c=>c.name))].sort(),old=$("clientFilter").value;$("clientFilter").innerHTML='<option value="all">Todos os clientes</option>'+n.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");if([...$("clientFilter").options].some(x=>x.value===old))$("clientFilter").value=old}
+function openClientModal(){$("clientOwner").value=viewPerson||me;$("clientModal").classList.add("show");renderClientManager()}
+function closeClientModal(){$("clientModal").classList.remove("show")}
+async function addClient(){const name=$("clientName").value.trim(),owner=$("clientOwner").value;if(!name)return alert("Digite o nome do cliente.");try{await clientReq("",{method:"POST",body:JSON.stringify({owner,name})});$("clientName").value="";await loadClients();$("assignee").value=owner;fillClientSelect();$("client").value=name}catch(e){alert(e.message)}}
+async function removeClient(id,name){if(!confirm('Remover "'+name+'" da lista de clientes?'))return;try{await clientReq("?id="+encodeURIComponent(id),{method:"DELETE"});await loadClients()}catch(e){alert(e.message)}}
+function renderClientManager(){if(!$("clientManagerList"))return;const o=$("clientOwner")?.value||me,a=ownerClients(o);$("clientManagerList").innerHTML=a.length?a.map(c=>`<div class="clientRow"><span>🏢 ${esc(c.name)}</span><button class="danger" onclick="removeClient('${c.id}','${esc(c.name).replace(/'/g,"&#39;")}')">Remover</button></div>`).join(""):'<div class="muted">Nenhum cliente cadastrado.</div>'}
 async function dailyReq(path,opt={}){
  opt.headers={...(opt.headers||{}),"Content-Type":"application/json","Authorization":"Bearer "+token};
  const r=await fetch(DAILY_API+path,opt); const x=await r.json();
@@ -276,7 +297,7 @@ function closeModal(){$("modal").classList.remove("show")}
 async function createTask(){
  try{
   const title=$("title").value.trim();if(!title)return alert("Digite a tarefa.");
-  await req("/tasks",{method:"POST",body:JSON.stringify({title,description:$("desc").value,assignee:$("assignee").value,due_date:$("due").value||null,priority:$("priority").value,status:"pending",created_by:me})});
+  await req("/tasks",{method:"POST",body:JSON.stringify({title,description:$("desc").value,assignee:$("assignee").value,due_date:$("due").value||null,priority:$("priority").value,status:"pending",created_by:me,client:$("client").value||null})});
   $("title").value="";$("desc").value="";$("due").value="";closeModal();notify("Tarefa criada",title);load();
  }catch(e){alert(e.message)}
 }
@@ -316,14 +337,14 @@ function createdLabel(v){if(!v)return "";try{return new Date(v).toLocaleDateStri
 function setSmartFilter(v){smartFilter=v;render()}
 function openEdit(id){
  const t=tasks.find(x=>String(x.id)===String(id));if(!t)return;
- $("editId").value=t.id;$("editTitle").value=t.title||"";$("editDesc").value=t.description||"";$("editAssignee").value=t.assignee||me;$("editDue").value=dateOnly(t.due_date);$("editPriority").value=t.priority||"medium";
+ $("editId").value=t.id;$("editTitle").value=t.title||"";$("editDesc").value=t.description||"";$("editAssignee").value=t.assignee||me;fillEditClientSelect(t.client||"");$("editDue").value=dateOnly(t.due_date);$("editPriority").value=t.priority||"medium";
  $("editModal").classList.add("show");
 }
 function closeEdit(){$("editModal").classList.remove("show")}
 async function saveEdit(){
  try{
   const id=$("editId").value,title=$("editTitle").value.trim();if(!title)return alert("Digite a tarefa.");
-  await req("/tasks/"+id,{method:"PATCH",body:JSON.stringify({title,description:$("editDesc").value,assignee:$("editAssignee").value,due_date:$("editDue").value||null,priority:$("editPriority").value})});
+  await req("/tasks/"+id,{method:"PATCH",body:JSON.stringify({title,description:$("editDesc").value,assignee:$("editAssignee").value,client:$("editClient").value||null,due_date:$("editDue").value||null,priority:$("editPriority").value})});
   closeEdit();notify("Tarefa atualizada",title);load();
  }catch(e){alert(e.message)}
 }
@@ -333,7 +354,7 @@ function card(t){
  const dayBadge=overdue(t)?'<span class="badge lateBadge">⚠️ ATRASADA</span>':isToday(t)&&t.status!=="done"?'<span class="badge todayBadge">📅 HOJE</span>':"";
  return `<div class="card ${t.priority} ${t.status==="done"?"statusDone":""}"><div class="title">${esc(t.title)}</div>
  ${t.description?`<div class="desc">${esc(t.description)}</div>`:""}
- <div class="taskSub"><span class="badge">${priorityText(t)}</span>${dayBadge}</div>
+ <div class="taskSub"><span class="badge">${priorityText(t)}</span>${t.client?`<span class="clientTag">🏢 ${esc(t.client)}</span>`:""}${dayBadge}</div>
  <div class="meta">👤 ${esc(t.assignee)} ${t.due_date?" · 📅 "+esc(dateOnly(t.due_date)):""}</div>
  <div class="created">Criada por ${esc(t.created_by||"—")} ${t.created_at?"· "+createdLabel(t.created_at):""}</div>
  <div class="cardactions"><button class="soft" onclick="setStatus('${t.id}','${next}')">${lab}</button><button class="editBtn" onclick="openEdit('${t.id}')">✏️ Editar</button>${t.status!=="pending"?`<button class="soft" onclick="setStatus('${t.id}','pending')">Pendente</button>`:""}</div></div>`;
@@ -342,7 +363,7 @@ function setQuickFilter(type){
  const other=me==="Luisa"?"Enzo":"Luisa";
  viewPerson=type==="mine"?me:type==="other"?other:null;
  $("filter").value=viewPerson||"all";
- syncQuickFilter();render();
+ syncQuickFilter();renderClientFilter();render();
 }
 function syncQuickFilter(){
  const v=$("filter").value,other=me==="Luisa"?"Enzo":"Luisa";
@@ -355,8 +376,8 @@ function syncQuickFilter(){
 function render(){renderDaily();
  const shown=viewPerson||"Luisa + Enzo";
  $("subtitle").textContent=viewPerson?"Você está vendo o painel de "+shown+".":"Você está vendo todas as tarefas de Luisa e Enzo.";
- let q=$("search").value.toLowerCase(),f=$("filter").value,s=$("sort").value;
- let a=tasks.filter(t=>(f==="all"||t.assignee===f)&&((t.title||"").toLowerCase().includes(q)||(t.description||"").toLowerCase().includes(q)));
+ let q=$("search").value.toLowerCase(),f=$("filter").value,cf=$("clientFilter").value,s=$("sort").value;
+ let a=tasks.filter(t=>(f==="all"||t.assignee===f)&&(cf==="all"||(t.client||"")===cf)&&((t.title||"").toLowerCase().includes(q)||(t.description||"").toLowerCase().includes(q)||(t.client||"").toLowerCase().includes(q)));
  if(smartFilter==="today")a=a.filter(isToday);
  if(smartFilter==="late")a=a.filter(overdue);
  if(smartFilter==="high")a=a.filter(t=>t.priority==="high");
@@ -380,6 +401,17 @@ function render(){renderDaily();
  $("todayList").innerHTML=todays.length?todays.map(t=>`<div class="todayItem"><div><div class="todayTitle">${esc(t.title)}</div><div class="muted">${esc(t.assignee)} · ${priorityText(t)}</div></div><button class="soft" onclick="openEdit('${t.id}')">Abrir</button></div>`).join(""):'<div class="empty" style="padding:18px 5px">Nada urgente para hoje 🎉</div>';
 }
 if(token&&me)showApp();
+
+
+let chatMessages=[],chatOpen=false,lastChatSeen=localStorage.getItem("duo_chat_seen")||"";
+async function chatReq(opt={}){opt.headers={...(opt.headers||{}),"Content-Type":"application/json","Authorization":"Bearer "+token};const r=await fetch(CHAT_API,opt),x=await r.json();if(!r.ok)throw Error(x.error||"Erro no chat");return x}
+async function loadChat(){if(!token)return;try{const a=await chatReq();const prev=chatMessages.length?chatMessages[chatMessages.length-1]?.id:null;chatMessages=a;renderChat();const last=a[a.length-1];if(last&&last.sender!==me&&last.id!==lastChatSeen&&!chatOpen){$("chatBadge").style.display="grid"}if(chatOpen&&last){lastChatSeen=last.id;localStorage.setItem("duo_chat_seen",last.id);$("chatBadge").style.display="none"}}catch(e){}}
+function openChat(){chatOpen=true;$("chatPanel").classList.add("show");$("chatBadge").style.display="none";const last=chatMessages[chatMessages.length-1];if(last){lastChatSeen=last.id;localStorage.setItem("duo_chat_seen",last.id)}renderChat();setTimeout(()=>{$("chatInput").focus()},100)}
+function closeChat(){chatOpen=false;$("chatPanel").classList.remove("show")}
+function renderChat(){if(!$("chatMessages"))return;$("chatMessages").innerHTML=chatMessages.length?chatMessages.map(m=>`<div class="bubble ${m.sender===me?"mine":"other"}"><div class="bubbleWho">${esc(m.sender)}</div><div>${esc(m.message)}</div><div class="bubbleTime">${new Date(m.created_at).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div></div>`).join(""):'<div class="empty">Nenhuma mensagem ainda.<br>Comece a conversa 💬</div>';if(chatOpen)setTimeout(()=>{$("chatMessages").scrollTop=$("chatMessages").scrollHeight},30)}
+async function sendChat(){const i=$("chatInput"),m=i.value.trim();if(!m)return;try{i.value="";await chatReq({method:"POST",body:JSON.stringify({message:m})});await loadChat()}catch(e){alert(e.message)}}
+function chatKey(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChat()}}
+setInterval(loadChat,2500);
 
 let deferredInstallPrompt=null;
 window.addEventListener("beforeinstallprompt",(e)=>{
