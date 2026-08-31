@@ -51,6 +51,11 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
   .financeModal{align-items:flex-end;padding:0}
   .financeModal .box{width:100%;max-height:92vh;border-radius:20px 20px 0 0}
 }
+
+.commandCenter{display:grid;grid-template-columns:1.25fr .75fr;gap:12px;margin:18px 0}.doNowCard{background:#17181a;color:#fff;border-radius:18px;padding:18px;box-shadow:0 12px 28px #0002}.doNowCard .muted{color:#c8cbd0}.doNowTop{display:flex;justify-content:space-between;gap:12px}.doNowTop h2{margin:5px 0 7px;font-size:21px}.doNowCard .badge{background:#ffffff1c}.quickCapture{background:#fff;border:1px solid #e1e4e8;border-radius:18px;padding:17px}.captureRow{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:8px}.captureRow input{margin:0}.linkBtn{background:transparent;padding:8px 0;color:#555}.board4{grid-template-columns:repeat(4,1fr)}.waitingCard{border-left:4px solid #777}.typeTag{font-size:10px;font-weight:900;border-radius:999px;padding:4px 7px;background:#f0f1f3}.problemTag{background:#fff0f0;color:#a22}.adTag{background:#eef4ff;color:#315f9d}
+.workHub{position:fixed;inset:0;background:#f5f6f8;z-index:95;display:none;overflow:auto}.workHub.show{display:block}.workHead{position:sticky;top:0;background:#fff;border-bottom:1px solid #e1e4e8;padding:15px max(18px,calc((100vw - 1160px)/2));display:flex;justify-content:space-between;align-items:center;z-index:3}.workBody{max-width:1160px;margin:auto;padding:20px}.workTabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.workSection{background:#fff;border:1px solid #e1e4e8;border-radius:18px;padding:18px}.sectionTitle{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}.sectionTitle h2,.workSection h2{margin:0 0 4px}.hubGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.hubMetric{padding:14px;background:#f7f8fa;border-radius:13px}.hubMetric b{display:block;font-size:25px}.problemRow,.clientTaskRow,.noteRow,.recRow{border:1px solid #e3e5e8;border-radius:12px;padding:12px;margin:8px 0;background:#fff}.problemRow{display:grid;grid-template-columns:1.4fr .8fr .7fr auto;gap:10px;align-items:center}.adBoard{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.adCol{background:#f1f2f4;border-radius:14px;padding:11px;min-height:260px}.adMini{background:#fff;border:1px solid #e0e3e7;border-radius:11px;padding:10px;margin-top:9px}.adMiniTitle{font-weight:850;font-size:13px}.clientDash{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.clientDashCard{border:1px solid #e1e4e8;border-radius:14px;padding:14px;background:#fafbfc;cursor:pointer}.clientDashCard:hover{border-color:#999}.clientDashCard b{display:block;font-size:15px}.clientDashCard .count{font-size:25px;font-weight:950;margin-top:8px}.clientDetailBox{margin-top:16px;border-top:1px solid #eee;padding-top:16px}.noteRow{display:flex;justify-content:space-between;gap:10px;align-items:center}.noteText{flex:1}.recRow{display:grid;grid-template-columns:1.4fr .7fr .7fr auto;gap:10px;align-items:center}.topModal{z-index:130}.attachUpload{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}.attachItem{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;background:#f5f6f8;border-radius:10px;margin-top:8px}.attachItem a{color:#17181a;font-weight:800;text-decoration:none}
+@media(max-width:950px){.board4,.adBoard{grid-template-columns:1fr 1fr}.hubGrid{grid-template-columns:1fr 1fr}.clientDash{grid-template-columns:1fr 1fr}.problemRow,.recRow{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.commandCenter{grid-template-columns:1fr}.board4,.adBoard,.hubGrid,.clientDash{grid-template-columns:1fr}.problemRow,.recRow{grid-template-columns:1fr}.captureRow{grid-template-columns:1fr}.sectionTitle{flex-direction:column}}
 </style>
 </head>
 <body class="loginbg">
@@ -82,9 +87,22 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
     </div>
     <div class="hero">
     <div><h1 id="greet"></h1><div class="muted" id="subtitle"></div></div>
-    <div class="actions"><button class="soft" onclick="openFinance()">💰 Financeiro</button><button id="installBtn" class="soft" style="display:none" onclick="installApp()">📲 Instalar app</button><button class="soft" onclick="requestNotify()">🔔 Ativar notificações</button><button class="primary" onclick="openModal()">+ Nova tarefa</button></div>
+    <div class="actions"><button class="soft" onclick="openWorkHub()">🧭 Organização</button><button class="soft" onclick="openFinance()">💰 Financeiro</button><button id="installBtn" class="soft" style="display:none" onclick="installApp()">📲 Instalar app</button><button class="soft" onclick="requestNotify()">🔔 Ativar notificações</button><button class="primary" onclick="openModal()">+ Nova tarefa</button></div>
   </div>
 
+
+  <section class="commandCenter">
+    <div class="doNowCard">
+      <div class="doNowTop"><div><div class="eyebrow">⚡ FAÇA AGORA</div><h2 id="doNowTitle">Tudo em dia</h2></div><span id="doNowBadge" class="badge">AUTO</span></div>
+      <div id="doNowMeta" class="muted">O sistema escolhe automaticamente a tarefa mais urgente.</div>
+      <div id="doNowActions" class="cardactions"></div>
+    </div>
+    <div class="quickCapture">
+      <div class="eyebrow">📝 ANOTAÇÃO RÁPIDA</div>
+      <div class="captureRow"><input id="quickNoteInput" placeholder="Jogue aqui uma ideia ou coisa para lembrar..."><button class="primary" onclick="addQuickNote()">Guardar</button></div>
+      <button class="linkBtn" onclick="openWorkHub('notes')">Ver caixa rápida <span id="noteCount">0</span></button>
+    </div>
+  </section>
   <section class="stats">
     <div class="stat"><div class="muted">Todas</div><div class="num" id="all">0</div></div>
     <div class="stat"><div class="muted">Pendentes</div><div class="num" id="pending">0</div></div>
@@ -153,9 +171,10 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
     <div id="dailyList" class="dailyList"></div>
   </section>
 
-<div class="board">
+<div class="board board4">
     <section class="col"><h2>🔴 PENDENTES</h2><div id="p"></div></section>
     <section class="col"><h2>🟡 EM ANDAMENTO</h2><div id="d"></div></section>
+    <section class="col"><h2>⏸ AGUARDANDO ALGUÉM</h2><div id="w"></div></section>
     <section class="col"><h2>🟢 CONCLUÍDAS</h2><div id="c"></div></section>
   </div>
 </main>
@@ -175,7 +194,11 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 <div id="editModal" class="modal"><div class="box">
 <h2>Editar tarefa</h2>
 <input type="hidden" id="editId">
+<label>Tipo</label><select id="editTaskType" onchange="toggleEditTypeFields()"><option value="task">Tarefa normal</option><option value="problem">Problema</option><option value="ad">Anúncio</option></select>
 <label>Tarefa</label><input id="editTitle">
+<div id="editProblemFields" style="display:none"><label>Categoria do problema</label><select id="editProblemCategory"><option>SAC</option><option>Mercado Livre</option><option>Estoque</option><option>Devolução</option><option>Anúncios</option><option>Erro</option><option>Outro</option></select></div>
+<div id="editAdFields" style="display:none"><label>Etapa do anúncio</label><select id="editAdStage"><option value="photo">Falta foto</option><option value="description">Falta descrição</option><option value="register">Cadastrar</option><option value="published">Publicado</option></select></div>
+<label>Aguardando alguém</label><input id="editWaitingOn" placeholder="Ex.: resposta do cliente (opcional)">
 <label>Detalhes</label><textarea id="editDesc" rows="3"></textarea>
 <label>Responsável</label><select id="editAssignee" onchange="fillEditClientSelect()"><option>Luisa</option><option>Enzo</option></select>
 <label>Cliente / Conta</label><select id="editClient"><option value="">Sem cliente</option></select>
@@ -196,7 +219,46 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 <div class="foot"><button class="soft" onclick="closeDailyModal()">Cancelar</button><button class="primary" onclick="createDailyTask()">Adicionar</button></div>
 </div></div>
 
-<div id="clientModal" class="modal"><div class="box"><h2>Clientes / Contas</h2><p class="muted">Cadastre uma vez e depois é só escolher na tarefa.</p><label>Cliente de quem?</label><select id="clientOwner" onchange="renderClientManager()"><option>Luisa</option><option>Enzo</option></select><label>Nome do cliente</label><input id="clientName" placeholder="Ex.: DAC, Marcel"><div class="foot"><button class="soft" onclick="closeClientModal()">Cancelar</button><button class="primary" onclick="addClient()">Adicionar</button></div><div id="clientManagerList" class="clientManagerList"></div></div></div><div id="financePanel" class="financePanel"><div class="financeHead"><div><b>💰 Financeiro</b><div class="muted">Faturas, recebimentos e despesas</div></div><button class="soft" onclick="closeFinance()">✕</button></div><div class="financeBody">
+<div id="clientModal" class="modal"><div class="box"><h2>Clientes / Contas</h2><p class="muted">Cadastre uma vez e depois é só escolher na tarefa.</p><label>Cliente de quem?</label><select id="clientOwner" onchange="renderClientManager()"><option>Luisa</option><option>Enzo</option></select><label>Nome do cliente</label><input id="clientName" placeholder="Ex.: DAC, Marcel"><div class="foot"><button class="soft" onclick="closeClientModal()">Cancelar</button><button class="primary" onclick="addClient()">Adicionar</button></div><div id="clientManagerList" class="clientManagerList"></div></div></div>
+<div id="workHub" class="workHub">
+  <div class="workHead"><div><b>🧭 Organização do trabalho</b><div class="muted">Tudo no lugar sem complicar.</div></div><button class="soft" onclick="closeWorkHub()">✕</button></div>
+  <div class="workBody">
+    <div class="workTabs">
+      <button data-work="tasks" class="primary" onclick="setWorkView('tasks',this)">📋 Tarefas</button>
+      <button data-work="problems" class="soft" onclick="setWorkView('problems',this)">🚨 Problemas</button>
+      <button data-work="ads" class="soft" onclick="setWorkView('ads',this)">📣 Anúncios</button>
+      <button data-work="clients" class="soft" onclick="setWorkView('clients',this)">👥 Clientes</button>
+      <button data-work="notes" class="soft" onclick="setWorkView('notes',this)">📝 Caixa rápida</button>
+      <button data-work="recurring" class="soft" onclick="setWorkView('recurring',this)">🔁 Recorrentes</button>
+    </div>
+
+    <section id="workTasks" class="workSection"><h2>Visão geral</h2><div id="workTaskSummary" class="hubGrid"></div></section>
+    <section id="workProblems" class="workSection" style="display:none"><div class="sectionTitle"><div><h2>🚨 Problemas</h2><div class="muted">SAC, Mercado Livre, estoque, devoluções, anúncios e erros.</div></div><button class="primary" onclick="newTypedTask('problem')">+ Problema</button></div><div id="problemList"></div></section>
+
+    <section id="workAds" class="workSection" style="display:none"><div class="sectionTitle"><div><h2>📣 Anúncios</h2><div class="muted">Acompanhe cada anúncio até publicar.</div></div><button class="primary" onclick="newTypedTask('ad')">+ Anúncio</button></div>
+      <div class="adBoard"><div class="adCol"><b>📷 Falta foto</b><div id="adPhoto"></div></div><div class="adCol"><b>✍️ Falta descrição</b><div id="adDescription"></div></div><div class="adCol"><b>🧾 Cadastrar</b><div id="adRegister"></div></div><div class="adCol"><b>✅ Publicado</b><div id="adPublished"></div></div></div>
+    </section>
+
+    <section id="workClients" class="workSection" style="display:none"><div class="sectionTitle"><div><h2>👥 Clientes</h2><div class="muted">Abra um cliente para ver tudo que está pendente para ele.</div></div><button class="soft" onclick="openClientModal()">+ Cliente</button></div><div id="clientDashboard" class="clientDash"></div><div id="clientDetail"></div></section>
+
+    <section id="workNotes" class="workSection" style="display:none"><div class="sectionTitle"><div><h2>📝 Caixa rápida</h2><div class="muted">Jogue ideias aqui agora e organize depois.</div></div></div><div class="captureRow"><input id="hubQuickNote" placeholder="Nova anotação rápida..."><button class="primary" onclick="addQuickNote(true)">Guardar</button></div><div id="quickNoteList"></div></section>
+
+    <section id="workRecurring" class="workSection" style="display:none"><div class="sectionTitle"><div><h2>🔁 Semanais e mensais</h2><div class="muted">O sistema cria a tarefa automaticamente no período certo.</div></div><button class="primary" onclick="openRecurringModal()">+ Recorrente</button></div><div id="recurringList"></div></section>
+  </div>
+</div>
+
+<div id="recurringModal" class="modal topModal"><div class="box"><h2>Nova tarefa recorrente</h2>
+<label>Tarefa</label><input id="recTitle">
+<label>Responsável</label><select id="recAssignee" onchange="fillRecurringClients()"><option>Luisa</option><option>Enzo</option></select>
+<label>Cliente</label><select id="recClient"><option value="">Sem cliente</option></select>
+<label>Prioridade</label><select id="recPriority"><option value="high">Alta</option><option value="medium" selected>Média</option><option value="low">Baixa</option></select>
+<label>Repetir</label><select id="recFrequency" onchange="toggleRecurrenceFields()"><option value="weekly">Toda semana</option><option value="monthly">Todo mês</option></select>
+<div id="weeklyField"><label>Dia da semana</label><select id="recWeekday"><option value="1">Segunda</option><option value="2">Terça</option><option value="3">Quarta</option><option value="4">Quinta</option><option value="5">Sexta</option><option value="6">Sábado</option><option value="0">Domingo</option></select></div>
+<div id="monthlyField" style="display:none"><label>Dia do mês</label><input id="recMonthDay" type="number" min="1" max="31" value="1"></div>
+<div class="foot"><button class="soft" onclick="closeTopModal('recurringModal')">Cancelar</button><button class="primary" onclick="saveRecurring()">Criar</button></div></div></div>
+
+<div id="attachmentModal" class="modal topModal"><div class="box"><h2>📎 Anexos da tarefa</h2><input type="hidden" id="attachTaskId"><div class="attachUpload"><input id="attachFile" type="file"><button class="primary" onclick="uploadAttachment()">Anexar</button></div><div class="muted">Prints, fotos e arquivos de até 3 MB.</div><div id="attachmentList"></div><div class="foot"><button class="soft" onclick="closeTopModal('attachmentModal')">Fechar</button></div></div></div>
+<div id="financePanel" class="financePanel"><div class="financeHead"><div><b>💰 Financeiro</b><div class="muted">Faturas, recebimentos e despesas</div></div><button class="soft" onclick="closeFinance()">✕</button></div><div class="financeBody">
 <div class="finStats"><div class="finStat"><span>A receber</span><b id="finReceive">R$ 0,00</b></div><div class="finStat"><span>Recebido</span><b id="finPaid">R$ 0,00</b></div><div class="finStat"><span>Atrasado</span><b id="finLate">R$ 0,00</b></div><div class="finStat"><span>Resultado</span><b id="finResult">R$ 0,00</b></div></div>
 <div class="finTabs"><button id="invTab" class="primary" onclick="finTab('invoices')">Faturas</button><button id="expTab" class="soft" onclick="finTab('expenses')">Despesas</button></div>
 <div id="invoiceView"><div class="finToolbar"><select id="finOwner" onchange="renderFinance()"><option value="all">Luisa + Enzo</option><option>Luisa</option><option>Enzo</option></select><select id="finStatus" onchange="renderFinance()"><option value="all">Todos</option><option value="pending">Pendentes</option><option value="paid">Pagos</option><option value="late">Atrasados</option></select><button class="primary" onclick="openInvoiceModal()">+ Nova fatura</button></div><div id="invoiceList"></div></div>
@@ -218,7 +280,8 @@ const DAILY_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-d
 const CLIENT_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-clientes";
 const CHAT_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-chat";
 const FIN_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/duo-financeiro";
-let token=localStorage.getItem("tl_token"),me=localStorage.getItem("tl_user"),tasks=[],dailyTasks=[],clients=[],previousIds=new Set(),firstLoad=true,smartFilter="all",viewPerson=null;
+const ORG_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/duo-organizer";
+let token=localStorage.getItem("tl_token"),me=localStorage.getItem("tl_user"),tasks=[],dailyTasks=[],clients=[],quickNotes=[],recurringTemplates=[],previousIds=new Set(),firstLoad=true,smartFilter="all",viewPerson=null,workView="tasks";
 
 const $=id=>document.getElementById(id);
 async function req(path,opt={}){
@@ -248,6 +311,7 @@ function showApp(){
 function logout(){localStorage.removeItem("tl_token");localStorage.removeItem("tl_user");location.reload()}
 async function load(){
  try{
+  await loadOrganizer();
   const fresh=await req("/tasks");
   const ids=new Set(fresh.map(x=>String(x.id)));
   if(!firstLoad){
@@ -271,6 +335,45 @@ function closeClientModal(){$("clientModal").classList.remove("show")}
 async function addClient(){const name=$("clientName").value.trim(),owner=$("clientOwner").value;if(!name)return alert("Digite o nome do cliente.");try{await clientReq("",{method:"POST",body:JSON.stringify({owner,name})});$("clientName").value="";await loadClients();$("assignee").value=owner;fillClientSelect();$("client").value=name}catch(e){alert(e.message)}}
 async function removeClient(id,name){if(!confirm('Remover "'+name+'" da lista de clientes?'))return;try{await clientReq("?id="+encodeURIComponent(id),{method:"DELETE"});await loadClients()}catch(e){alert(e.message)}}
 function renderClientManager(){if(!$("clientManagerList"))return;const o=$("clientOwner")?.value||me,a=ownerClients(o);$("clientManagerList").innerHTML=a.length?a.map(c=>`<div class="clientRow"><span>🏢 ${esc(c.name)}</span><button class="danger" onclick="removeClient('${c.id}','${esc(c.name).replace(/'/g,"&#39;")}')">Remover</button></div>`).join(""):'<div class="muted">Nenhum cliente cadastrado.</div>'}
+
+async function orgReq(path,opt={}){opt.headers={...(opt.headers||{}),"Content-Type":"application/json","Authorization":"Bearer "+token};const r=await fetch(ORG_API+path,opt),x=await r.json();if(!r.ok)throw Error(x.error||"Erro");return x}
+async function loadOrganizer(){if(!token)return;try{[quickNotes,recurringTemplates]=await Promise.all([orgReq("/notes"),orgReq("/recurring")]);renderQuickNotes();renderRecurring()}catch(e){}}
+function openWorkHub(view){$("workHub").classList.add("show");if(view)setWorkView(view);renderWorkHub();loadOrganizer()}
+function closeWorkHub(){$("workHub").classList.remove("show")}
+function setWorkView(v,btn){workView=v;document.querySelectorAll(".workSection").forEach(x=>x.style.display="none");const map={tasks:"workTasks",problems:"workProblems",ads:"workAds",clients:"workClients",notes:"workNotes",recurring:"workRecurring"};$(map[v]).style.display="block";document.querySelectorAll("[data-work]").forEach(x=>x.className="soft");const b=btn||document.querySelector(`[data-work="${v}"]`);if(b)b.className="primary";renderWorkHub()}
+function renderWorkHub(){renderWorkSummary();renderProblems();renderAds();renderClientDashboard();renderQuickNotes();renderRecurring()}
+function visibleTasksBase(){return tasks.filter(t=>!viewPerson||t.assignee===viewPerson)}
+function renderWorkSummary(){if(!$("workTaskSummary"))return;const a=visibleTasksBase();$("workTaskSummary").innerHTML=`<div class="hubMetric"><span class="muted">Pendentes</span><b>${a.filter(x=>x.status==="pending").length}</b></div><div class="hubMetric"><span class="muted">Em andamento</span><b>${a.filter(x=>x.status==="doing").length}</b></div><div class="hubMetric"><span class="muted">Aguardando</span><b>${a.filter(x=>x.status==="waiting").length}</b></div><div class="hubMetric"><span class="muted">Problemas</span><b>${a.filter(x=>x.task_type==="problem"&&x.status!=="done").length}</b></div>`}
+function renderProblems(){if(!$("problemList"))return;const a=visibleTasksBase().filter(x=>x.task_type==="problem"&&x.status!=="done");$("problemList").innerHTML=a.length?a.map(t=>`<div class="problemRow"><div><b>${esc(t.title)}</b><div class="finSmall">${esc(t.client||"Sem cliente")}</div></div><span class="typeTag problemTag">🚨 ${esc(t.problem_category||"Problema")}</span><span>${priorityText(t)}</span><button class="soft" onclick="openEdit('${t.id}')">Abrir</button></div>`).join(""):'<div class="empty">Nenhum problema aberto.</div>'}
+const adStages=["photo","description","register","published"];function adStageLabel(s){return {photo:"Falta foto",description:"Falta descrição",register:"Cadastrar",published:"Publicado"}[s]||"Falta foto"}
+function renderAds(){if(!$("adPhoto"))return;const a=visibleTasksBase().filter(x=>x.task_type==="ad");const ids={photo:"adPhoto",description:"adDescription",register:"adRegister",published:"adPublished"};Object.values(ids).forEach(id=>$(id).innerHTML="");for(const st of adStages){const list=a.filter(x=>(x.ad_stage||"photo")===st);$(ids[st]).innerHTML=list.length?list.map(t=>`<div class="adMini"><div class="adMiniTitle">${esc(t.title)}</div><div class="finSmall">${esc(t.client||"Sem cliente")} · ${priorityText(t)}</div><div class="cardactions">${st!=="published"?`<button class="soft" onclick="advanceAd('${t.id}','${st}')">Próxima →</button>`:""}<button class="soft" onclick="openEdit('${t.id}')">Editar</button></div></div>`).join(""):'<div class="muted" style="padding:12px 0">Vazio</div>'}}
+async function advanceAd(id,stage){const i=adStages.indexOf(stage),next=adStages[Math.min(i+1,adStages.length-1)];try{await req("/tasks/"+id,{method:"PATCH",body:JSON.stringify({ad_stage:next,status:next==="published"?"done":"pending"})});load()}catch(e){alert(e.message)}}
+function renderClientDashboard(){if(!$("clientDashboard"))return;const owner=viewPerson||me,cs=clients.filter(c=>c.owner===owner);$("clientDashboard").innerHTML=cs.length?cs.map(c=>{const a=tasks.filter(t=>t.client===c.name&&t.status!=="done"&&(!viewPerson||t.assignee===viewPerson));return `<div class="clientDashCard" onclick="showClientDetail('${esc(c.name).replace(/'/g,"&#39;")}')"><b>🏢 ${esc(c.name)}</b><div class="count">${a.length}</div><div class="muted">pendência(s)</div></div>`}).join(""):'<div class="empty" style="grid-column:1/-1">Nenhum cliente cadastrado.</div>'}
+function showClientDetail(name){const a=tasks.filter(t=>t.client===name&&(!viewPerson||t.assignee===viewPerson));$("clientDetail").innerHTML=`<div class="clientDetailBox"><div class="sectionTitle"><div><h2>🏢 ${esc(name)}</h2><div class="muted">${a.filter(x=>x.status!=="done").length} pendência(s) aberta(s)</div></div><button class="primary" onclick="newTaskForClient('${esc(name).replace(/'/g,"&#39;")}')">+ Tarefa para este cliente</button></div>${a.length?a.map(t=>`<div class="clientTaskRow"><b>${esc(t.title)}</b> · ${priorityText(t)} · ${statusText(t.status)}</div>`).join(""):'<div class="empty">Nenhuma tarefa para este cliente.</div>'}</div>`}
+function statusText(s){return {pending:"Pendente",doing:"Em andamento",waiting:"Aguardando alguém",done:"Concluída"}[s]||s}
+function newTaskForClient(name){closeWorkHub();openModal();$("client").value=name}
+function newTypedTask(type){closeWorkHub();openModal();$("taskType").value=type;toggleTaskTypeFields()}
+function toggleTaskTypeFields(){const v=$("taskType").value;$("problemFields").style.display=v==="problem"?"block":"none";$("adFields").style.display=v==="ad"?"block":"none"}
+function toggleEditTypeFields(){const v=$("editTaskType").value;$("editProblemFields").style.display=v==="problem"?"block":"none";$("editAdFields").style.display=v==="ad"?"block":"none"}
+function bestTask(){const a=visibleTasksBase().filter(t=>t.status!=="done"&&t.status!=="waiting");if(!a.length)return null;const today=todayISO();function score(t){let s=0;if(t.due_date){if(dateOnly(t.due_date)<today)s+=1000;else if(dateOnly(t.due_date)===today)s+=700;else{const days=(new Date(t.due_date+"T12:00:00")-new Date(today+"T12:00:00"))/86400000;s+=Math.max(0,250-days*20)}}s+=t.priority==="high"?300:t.priority==="medium"?150:50;if(t.status==="doing")s+=120;if(t.task_type==="problem")s+=80;return s}return a.sort((x,y)=>score(y)-score(x))[0]}
+function renderDoNow(){if(!$("doNowTitle"))return;const t=bestTask();if(!t){$("doNowTitle").textContent="Tudo em dia 🎉";$("doNowMeta").textContent="Nenhuma tarefa urgente agora.";$("doNowActions").innerHTML="";return}$("doNowTitle").textContent=t.title;$("doNowMeta").innerHTML=`${t.client?"🏢 "+esc(t.client)+" · ":""}${priorityText(t)}${t.due_date?" · 📅 "+dateOnly(t.due_date):""}`;$("doNowActions").innerHTML=`<button class="soft" onclick="openEdit('${t.id}')">Abrir tarefa</button>${t.status==="pending"?`<button class="primary" style="background:#fff;color:#17181a" onclick="setStatus('${t.id}','doing')">Começar agora</button>`:""}`}
+async function setWaiting(id){const who=prompt("O que/quem você está aguardando?\\nEx.: resposta do cliente, fornecedor, Mercado Livre");if(who===null)return;try{await req("/tasks/"+id,{method:"PATCH",body:JSON.stringify({status:"waiting",waiting_on:who.trim()||null})});load()}catch(e){alert(e.message)}}
+async function addQuickNote(fromHub=false){const input=fromHub?$("hubQuickNote"):$("quickNoteInput"),content=input.value.trim();if(!content)return;try{await orgReq("/notes",{method:"POST",body:JSON.stringify({content})});input.value="";quickNotes=await orgReq("/notes");renderQuickNotes()}catch(e){alert(e.message)}}
+function renderQuickNotes(){if($("noteCount"))$("noteCount").textContent=quickNotes.length;if(!$("quickNoteList"))return;$("quickNoteList").innerHTML=quickNotes.length?quickNotes.map(n=>`<div class="noteRow"><div class="noteText">${esc(n.content)}<div class="finSmall">${new Date(n.created_at).toLocaleString("pt-BR")}</div></div><div class="cardactions"><button class="soft" onclick="convertNote('${n.id}','${esc(n.content).replace(/'/g,"&#39;")}')">Virar tarefa</button><button class="danger" onclick="deleteNote('${n.id}')">🗑</button></div></div>`).join(""):'<div class="empty">Caixa rápida vazia.</div>'}
+async function convertNote(id,content){try{await req("/tasks",{method:"POST",body:JSON.stringify({title:content,assignee:me,priority:"medium",status:"pending",created_by:me,task_type:"task"})});await deleteNote(id,false);load()}catch(e){alert(e.message)}}
+async function deleteNote(id,ask=true){if(ask&&!confirm("Apagar esta anotação?"))return;try{await orgReq("/notes?id="+encodeURIComponent(id),{method:"DELETE"});quickNotes=await orgReq("/notes");renderQuickNotes()}catch(e){alert(e.message)}}
+function openRecurringModal(){$("recAssignee").value=viewPerson||me;fillRecurringClients();toggleRecurrenceFields();$("recurringModal").classList.add("show")}
+function closeTopModal(id){$(id).classList.remove("show")}
+function fillRecurringClients(){const o=$("recAssignee").value,a=clients.filter(c=>c.owner===o);$("recClient").innerHTML='<option value="">Sem cliente</option>'+a.map(c=>`<option>${esc(c.name)}</option>`).join("")}
+function toggleRecurrenceFields(){const f=$("recFrequency").value;$("weeklyField").style.display=f==="weekly"?"block":"none";$("monthlyField").style.display=f==="monthly"?"block":"none"}
+async function saveRecurring(){const title=$("recTitle").value.trim(),frequency=$("recFrequency").value;if(!title)return alert("Digite a tarefa.");try{await orgReq("/recurring",{method:"POST",body:JSON.stringify({title,assignee:$("recAssignee").value,client:$("recClient").value||null,priority:$("recPriority").value,frequency,weekday:$("recWeekday").value,month_day:$("recMonthDay").value})});$("recTitle").value="";closeTopModal("recurringModal");recurringTemplates=await orgReq("/recurring");renderRecurring()}catch(e){alert(e.message)}}
+function renderRecurring(){if(!$("recurringList"))return;$("recurringList").innerHTML=recurringTemplates.length?recurringTemplates.map(r=>`<div class="recRow"><div><b>${esc(r.title)}</b><div class="finSmall">${esc(r.client||"Sem cliente")} · ${esc(r.assignee)}</div></div><span>${priorityText(r)}</span><span>${r.frequency==="weekly"?"Semanal":"Mensal"}</span><button class="danger" onclick="deleteRecurring('${r.id}')">🗑</button></div>`).join(""):'<div class="empty">Nenhuma tarefa semanal ou mensal.</div>'}
+async function deleteRecurring(id){if(!confirm("Apagar esta recorrência?"))return;try{await orgReq("/recurring?id="+encodeURIComponent(id),{method:"DELETE"});recurringTemplates=await orgReq("/recurring");renderRecurring()}catch(e){alert(e.message)}}
+async function openAttachments(taskId){$("attachTaskId").value=taskId;$("attachmentModal").classList.add("show");await loadAttachments()}
+async function loadAttachments(){const id=$("attachTaskId").value;try{const a=await orgReq("/attachments?task_id="+encodeURIComponent(id));$("attachmentList").innerHTML=a.length?a.map(x=>`<div class="attachItem"><a href="${x.file_data}" download="${esc(x.file_name)}" target="_blank">📎 ${esc(x.file_name)}</a><button class="danger" onclick="deleteAttachment('${x.id}')">🗑</button></div>`).join(""):'<div class="empty">Nenhum anexo.</div>'}catch(e){alert(e.message)}}
+async function uploadAttachment(){const f=$("attachFile").files[0];if(!f)return alert("Escolha um arquivo.");if(f.size>3000000)return alert("Máximo 3 MB.");const reader=new FileReader();reader.onload=async()=>{try{await orgReq("/attachments",{method:"POST",body:JSON.stringify({task_id:$("attachTaskId").value,file_name:f.name,mime_type:f.type,file_size:f.size,file_data:reader.result})});$("attachFile").value="";loadAttachments()}catch(e){alert(e.message)}};reader.readAsDataURL(f)}
+async function deleteAttachment(id){if(!confirm("Excluir este anexo?"))return;try{await orgReq("/attachments?id="+encodeURIComponent(id),{method:"DELETE"});loadAttachments()}catch(e){alert(e.message)}}
+
 async function dailyReq(path,opt={}){
  opt.headers={...(opt.headers||{}),"Content-Type":"application/json","Authorization":"Bearer "+token};
  const r=await fetch(DAILY_API+path,opt); const x=await r.json();
@@ -312,8 +415,8 @@ function closeModal(){$("modal").classList.remove("show")}
 async function createTask(){
  try{
   const title=$("title").value.trim();if(!title)return alert("Digite a tarefa.");
-  await req("/tasks",{method:"POST",body:JSON.stringify({title,description:$("desc").value,assignee:$("assignee").value,due_date:$("due").value||null,priority:$("priority").value,status:"pending",created_by:me,client:$("client").value||null})});
-  $("title").value="";$("desc").value="";$("due").value="";closeModal();notify("Tarefa criada",title);load();
+  await req("/tasks",{method:"POST",body:JSON.stringify({title,description:$("desc").value,assignee:$("assignee").value,due_date:$("due").value||null,priority:$("priority").value,status:"pending",created_by:me,client:$("client").value||null,task_type:$("taskType").value,problem_category:$("taskType").value==="problem"?$("problemCategory").value:null,ad_stage:$("taskType").value==="ad"?$("adStage").value:null})});
+  $("title").value="";$("desc").value="";$("due").value="";$("taskType").value="task";toggleTaskTypeFields();closeModal();notify("Tarefa criada",title);load();
  }catch(e){alert(e.message)}
 }
 async function setStatus(id,status){
@@ -352,24 +455,25 @@ function createdLabel(v){if(!v)return "";try{return new Date(v).toLocaleDateStri
 function setSmartFilter(v){smartFilter=v;render()}
 function openEdit(id){
  const t=tasks.find(x=>String(x.id)===String(id));if(!t)return;
- $("editId").value=t.id;$("editTitle").value=t.title||"";$("editDesc").value=t.description||"";$("editAssignee").value=t.assignee||me;fillEditClientSelect(t.client||"");$("editDue").value=dateOnly(t.due_date);$("editPriority").value=t.priority||"medium";
+ $("editId").value=t.id;$("editTaskType").value=t.task_type||"task";toggleEditTypeFields();$("editProblemCategory").value=t.problem_category||"SAC";$("editAdStage").value=t.ad_stage||"photo";$("editWaitingOn").value=t.waiting_on||"";$("editTitle").value=t.title||"";$("editDesc").value=t.description||"";$("editAssignee").value=t.assignee||me;fillEditClientSelect(t.client||"");$("editDue").value=dateOnly(t.due_date);$("editPriority").value=t.priority||"medium";
  $("editModal").classList.add("show");
 }
 function closeEdit(){$("editModal").classList.remove("show")}
 async function saveEdit(){
  try{
   const id=$("editId").value,title=$("editTitle").value.trim();if(!title)return alert("Digite a tarefa.");
-  await req("/tasks/"+id,{method:"PATCH",body:JSON.stringify({title,description:$("editDesc").value,assignee:$("editAssignee").value,client:$("editClient").value||null,due_date:$("editDue").value||null,priority:$("editPriority").value})});
+  await req("/tasks/"+id,{method:"PATCH",body:JSON.stringify({title,description:$("editDesc").value,assignee:$("editAssignee").value,client:$("editClient").value||null,due_date:$("editDue").value||null,priority:$("editPriority").value,task_type:$("editTaskType").value,problem_category:$("editTaskType").value==="problem"?$("editProblemCategory").value:null,ad_stage:$("editTaskType").value==="ad"?$("editAdStage").value:null,waiting_on:$("editWaitingOn").value.trim()||null})});
   closeEdit();notify("Tarefa atualizada",title);load();
  }catch(e){alert(e.message)}
 }
 function priorityText(t){return t.priority==="high"?"🔴 ALTA":t.priority==="medium"?"🟡 MÉDIA":"🟢 BAIXA"}
 function card(t){
- let next=t.status==="pending"?"doing":t.status==="doing"?"done":"pending",lab=t.status==="pending"?"Iniciar":t.status==="doing"?"Concluir":"Reabrir";
+ let next=t.status==="pending"?"doing":t.status==="doing"?"done":t.status==="waiting"?"doing":"pending",lab=t.status==="pending"?"Iniciar":t.status==="doing"?"Concluir":t.status==="waiting"?"Retomar":"Reabrir";
  const dayBadge=overdue(t)?'<span class="badge lateBadge">⚠️ ATRASADA</span>':isToday(t)&&t.status!=="done"?'<span class="badge todayBadge">📅 HOJE</span>':"";
- return `<div class="card ${t.priority} ${t.status==="done"?"statusDone":""}"><div class="title">${esc(t.title)}</div>
+ const typeBadge=t.task_type==="problem"?`<span class="typeTag problemTag">🚨 ${esc(t.problem_category||"Problema")}</span>`:t.task_type==="ad"?`<span class="typeTag adTag">📣 ${esc(adStageLabel(t.ad_stage))}</span>`:"";
+ return `<div class="card ${t.priority} ${t.status==="done"?"statusDone":""} ${t.status==="waiting"?"waitingCard":""}"><div class="title">${esc(t.title)}</div>
  ${t.description?`<div class="desc">${esc(t.description)}</div>`:""}
- <div class="taskSub"><span class="badge">${priorityText(t)}</span>${t.client?`<span class="clientTag">🏢 ${esc(t.client)}</span>`:""}${dayBadge}</div>
+ <div class="taskSub"><span class="badge">${priorityText(t)}</span>${typeBadge}${t.client?`<span class="clientTag">🏢 ${esc(t.client)}</span>`:""}${dayBadge}</div>${t.status==="waiting"?`<div class="meta">⏸ Aguardando: <b>${esc(t.waiting_on||"alguém")}</b></div>`:""}
  <div class="meta">👤 ${esc(t.assignee)} ${t.due_date?" · 📅 "+esc(dateOnly(t.due_date)):""}</div>
  <div class="created">Criada por ${esc(t.created_by||"—")} ${t.created_at?"· "+createdLabel(t.created_at):""}</div>
  <div class="cardactions"><button class="soft" onclick="setStatus('${t.id}','${next}')">${lab}</button><button class="editBtn" onclick="openEdit('${t.id}')">✏️ Editar</button>${t.status!=="pending"?`<button class="soft" onclick="setStatus('${t.id}','pending')">Pendente</button>`:""}</div></div>`;
@@ -398,9 +502,10 @@ function render(){renderDaily();
  if(smartFilter==="high")a=a.filter(t=>t.priority==="high");
  if(s==="due")a.sort((x,y)=>(x.due_date||"9999").localeCompare(y.due_date||"9999"));
  if(s==="priority"){let w={high:0,medium:1,low:2};a.sort((x,y)=>w[x.priority]-w[y.priority])}
- const p=a.filter(x=>x.status==="pending"),d=a.filter(x=>x.status==="doing"),c=a.filter(x=>x.status==="done");
+ const p=a.filter(x=>x.status==="pending"),d=a.filter(x=>x.status==="doing"),w=a.filter(x=>x.status==="waiting"),c=a.filter(x=>x.status==="done");
  $("p").innerHTML=p.map(card).join("")||'<div class="empty">Nada por aqui.</div>';
  $("d").innerHTML=d.map(card).join("")||'<div class="empty">Nada por aqui.</div>';
+ $("w").innerHTML=w.map(card).join("")||'<div class="empty">Nada aguardando.</div>';
  $("c").innerHTML=c.map(card).join("")||'<div class="empty">Nada por aqui.</div>';
  $("all").textContent=visibleBase.length;$("pending").textContent=visibleBase.filter(x=>x.status==="pending").length;$("doing").textContent=visibleBase.filter(x=>x.status==="doing").length;$("done").textContent=visibleBase.filter(x=>x.status==="done").length;$("overdue").textContent=visibleBase.filter(overdue).length;
  const other=me==="Luisa"?"Enzo":"Luisa";
@@ -413,7 +518,7 @@ function render(){renderDaily();
  const todays=visibleBase.filter(t=>isToday(t)&&t.status!=="done").slice(0,4);
  $("todayCount").textContent=visibleBase.filter(t=>isToday(t)&&t.status!=="done").length;
  $("lateCount").textContent=visibleBase.filter(overdue).length;
- $("todayList").innerHTML=todays.length?todays.map(t=>`<div class="todayItem"><div><div class="todayTitle">${esc(t.title)}</div><div class="muted">${esc(t.assignee)} · ${priorityText(t)}</div></div><button class="soft" onclick="openEdit('${t.id}')">Abrir</button></div>`).join(""):'<div class="empty" style="padding:18px 5px">Nada urgente para hoje 🎉</div>';
+ renderDoNow();renderWorkHub(); $("todayList").innerHTML=todays.length?todays.map(t=>`<div class="todayItem"><div><div class="todayTitle">${esc(t.title)}</div><div class="muted">${esc(t.assignee)} · ${priorityText(t)}</div></div><button class="soft" onclick="openEdit('${t.id}')">Abrir</button></div>`).join(""):'<div class="empty" style="padding:18px 5px">Nada urgente para hoje 🎉</div>';
 }
 if(token&&me)showApp();
 
