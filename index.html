@@ -188,7 +188,7 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 const API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-luisa-enzo";
 const DELETE_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-delete";
 const DAILY_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-diarias";
-let token=localStorage.getItem("tl_token"),me=localStorage.getItem("tl_user"),tasks=[],dailyTasks=[],previousIds=new Set(),firstLoad=true,smartFilter="all";
+let token=localStorage.getItem("tl_token"),me=localStorage.getItem("tl_user"),tasks=[],dailyTasks=[],previousIds=new Set(),firstLoad=true,smartFilter="all",viewPerson=null;
 
 const $=id=>document.getElementById(id);
 async function req(path,opt={}){
@@ -208,7 +208,7 @@ function showApp(){
  $("login").style.display="none";$("app").style.display="block";$("who").textContent=me;$("avatar").textContent=me==="Luisa"?"👩":"👨";$("assignee").value=me;
  $("greet").textContent=(new Date().getHours()<12?"Bom dia, ":new Date().getHours()<18?"Boa tarde, ":"Boa noite, ")+me+"!";
  $("subtitle").textContent="Aqui está tudo que vocês precisam fazer.";
- const other=me==="Luisa"?"Enzo":"Luisa";
+ viewPerson=me; const other=me==="Luisa"?"Enzo":"Luisa";
  $("mineName").textContent=me;$("otherName").textContent=other;
  $("mineAvatar").textContent=me==="Luisa"?"👩":"👨";$("otherAvatar").textContent=other==="Luisa"?"👩":"👨";
  $("filter").value=me;$("dailyAssignee").value=me;
@@ -257,7 +257,7 @@ async function deleteDaily(id,title){
  catch(e){alert(e.message)}
 }
 function renderDaily(){
- const mine=dailyTasks.filter(t=>t.assignee===me);
+ const mine=dailyTasks.filter(t=>!viewPerson||t.assignee===viewPerson);
  const done=mine.filter(t=>t.done_today).length,total=mine.length,pct=total?Math.round(done/total*100):0;
  $("dailyDoneCount").textContent=done;$("dailyTotalCount").textContent=total;$("dailyBarFill").style.width=pct+"%";
  $("dailyList").innerHTML=mine.length?mine.map(t=>`<div class="dailyItem ${t.done_today?"done":""}">
@@ -335,17 +335,21 @@ function card(t){
 }
 function setQuickFilter(type){
  const other=me==="Luisa"?"Enzo":"Luisa";
- $("filter").value=type==="mine"?me:type==="other"?other:"all";
+ viewPerson=type==="mine"?me:type==="other"?other:null;
+ $("filter").value=viewPerson||"all";
  syncQuickFilter();render();
 }
 function syncQuickFilter(){
  const v=$("filter").value,other=me==="Luisa"?"Enzo":"Luisa";
+ viewPerson=v==="all"?null:v;
  ["mineBtn","otherBtn","allBtn"].forEach(id=>$(id).classList.remove("active"));
  if(v===me)$("mineBtn").classList.add("active");
  else if(v===other)$("otherBtn").classList.add("active");
  else $("allBtn").classList.add("active");
 }
 function render(){renderDaily();
+ const shown=viewPerson||"Luisa + Enzo";
+ $("subtitle").textContent=viewPerson?"Você está vendo o painel de "+shown+".":"Você está vendo todas as tarefas de Luisa e Enzo.";
  let q=$("search").value.toLowerCase(),f=$("filter").value,s=$("sort").value;
  let a=tasks.filter(t=>(f==="all"||t.assignee===f)&&((t.title||"").toLowerCase().includes(q)||(t.description||"").toLowerCase().includes(q)));
  if(smartFilter==="today")a=a.filter(isToday);
@@ -357,17 +361,17 @@ function render(){renderDaily();
  $("p").innerHTML=p.map(card).join("")||'<div class="empty">Nada por aqui.</div>';
  $("d").innerHTML=d.map(card).join("")||'<div class="empty">Nada por aqui.</div>';
  $("c").innerHTML=c.map(card).join("")||'<div class="empty">Nada por aqui.</div>';
- $("all").textContent=tasks.length;$("pending").textContent=tasks.filter(x=>x.status==="pending").length;$("doing").textContent=tasks.filter(x=>x.status==="doing").length;$("done").textContent=tasks.filter(x=>x.status==="done").length;$("overdue").textContent=tasks.filter(overdue).length;
+ $("all").textContent=visibleBase.length;$("pending").textContent=visibleBase.filter(x=>x.status==="pending").length;$("doing").textContent=visibleBase.filter(x=>x.status==="doing").length;$("done").textContent=visibleBase.filter(x=>x.status==="done").length;$("overdue").textContent=visibleBase.filter(overdue).length;
  const other=me==="Luisa"?"Enzo":"Luisa";
  $("minePending").textContent=tasks.filter(x=>x.assignee===me&&x.status==="pending").length;
  $("mineDoing").textContent=tasks.filter(x=>x.assignee===me&&x.status==="doing").length;
  $("otherPending").textContent=tasks.filter(x=>x.assignee===other&&x.status==="pending").length;
  $("otherDoing").textContent=tasks.filter(x=>x.assignee===other&&x.status==="doing").length;
- const total=tasks.length,doneN=tasks.filter(x=>x.status==="done").length,pct=total?Math.round(doneN/total*100):0;
+ const visibleBase=tasks.filter(t=>!viewPerson||t.assignee===viewPerson); const total=visibleBase.length,doneN=visibleBase.filter(x=>x.status==="done").length,pct=total?Math.round(doneN/total*100):0;
  $("progressPct").textContent=pct+"%";$("progressFill").style.width=pct+"%";
- const todays=tasks.filter(t=>isToday(t)&&t.status!=="done").slice(0,4);
- $("todayCount").textContent=tasks.filter(t=>isToday(t)&&t.status!=="done").length;
- $("lateCount").textContent=tasks.filter(overdue).length;
+ const todays=visibleBase.filter(t=>isToday(t)&&t.status!=="done").slice(0,4);
+ $("todayCount").textContent=visibleBase.filter(t=>isToday(t)&&t.status!=="done").length;
+ $("lateCount").textContent=visibleBase.filter(overdue).length;
  $("todayList").innerHTML=todays.length?todays.map(t=>`<div class="todayItem"><div><div class="todayTitle">${esc(t.title)}</div><div class="muted">${esc(t.assignee)} · ${priorityText(t)}</div></div><button class="soft" onclick="openEdit('${t.id}')">Abrir</button></div>`).join(""):'<div class="empty" style="padding:18px 5px">Nada urgente para hoje 🎉</div>';
 }
 if(token&&me)showApp();
