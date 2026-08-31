@@ -1,65 +1,177 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Tarefas — Luisa & Enzo</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#17181a">
+<title>Luisa & Enzo — Tarefas</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f6f8;color:#17181a}
-header{background:#fff;border-bottom:1px solid #e5e6ea;padding:16px 22px;display:flex;justify-content:space-between;align-items:center}
-h1{font-size:21px;margin:0}.wrap{max-width:1100px;margin:auto;padding:22px}button{border:0;border-radius:10px;padding:10px 15px;font-weight:700;cursor:pointer}
-.primary{background:#17181a;color:#fff}.ghost{background:#eceef1;color:#17181a}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
-.stat,.card,.login,.box{background:#fff;border:1px solid #e2e4e8;border-radius:14px;padding:15px}.num{font-size:28px;font-weight:800}.muted{color:#70747c;font-size:13px}
-.board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.col{background:#eceef1;border-radius:14px;padding:12px;min-height:300px}.col h2{font-size:14px;margin:5px}
-.card{margin:10px 0}.title{font-weight:800}.meta{font-size:12px;color:#70747c;margin-top:7px}.actions{display:flex;gap:7px;margin-top:11px}
-.high{border-left:4px solid #c93b3b}.medium{border-left:4px solid #c89a25}.low{border-left:4px solid #4d8b5c}
-.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:20px}.modal.show{display:flex}
-.box{width:min(520px,100%)}input,textarea,select{width:100%;padding:11px;border:1px solid #d7d9de;border-radius:9px;margin:6px 0 12px;font:inherit}.login{max-width:420px;margin:80px auto;padding:28px}
-@media(max-width:750px){.stats,.board{grid-template-columns:1fr}.wrap{padding:15px}}
-</style></head>
-<body>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#f6f7f9;color:#18191b}
+button,input,textarea,select{font:inherit}button{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
+.primary{background:#17181a;color:#fff}.soft{background:#eceef1;color:#222}.danger{background:#fff0f0;color:#a22}.muted{color:#737780;font-size:13px}
+.login{max-width:430px;margin:8vh auto;padding:28px;background:#fff;border:1px solid #e3e5e8;border-radius:18px;box-shadow:0 12px 35px #0000000b}
+body.loginbg{background:linear-gradient(135deg,#f8f9fb,#eef0f4)}
+label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textarea,select{width:100%;padding:11px;border:1px solid #d9dce1;border-radius:10px;background:#fff;margin-top:6px}
+.app{display:none}.top{background:#fff;border-bottom:1px solid #e4e6e9;position:sticky;top:0;z-index:5}.topin{max-width:1150px;margin:auto;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:15px}.brand{font-weight:900;font-size:20px}.who{display:flex;align-items:center;gap:9px}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#eceef1;font-size:18px}
+.wrap{max-width:1150px;margin:auto;padding:22px 20px}.cover{height:260px;border-radius:22px;overflow:hidden;position:relative;margin-bottom:20px;background:#222;box-shadow:0 14px 35px #00000014}
+.cover img{width:100%;height:100%;object-fit:cover;object-position:center 42%;display:block}
+.coverShade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.68),rgba(0,0,0,.12) 65%,rgba(0,0,0,.35))}
+.coverText{position:absolute;left:26px;bottom:24px;color:#fff;text-shadow:0 2px 12px #0008}
+.coverText h1{font-size:32px;margin:4px 0 5px}.coverText .small{font-size:11px;font-weight:900;letter-spacing:2px;opacity:.92}
+.hero{display:flex;justify-content:space-between;align-items:center;gap:15px}.hero h1{margin:0 0 5px;font-size:27px}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:20px 0}.stat{background:#fff;border:1px solid #e2e4e8;border-radius:15px;padding:15px}.num{font-size:27px;font-weight:900;margin-top:3px}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0}.toolbar select,.toolbar input{width:auto;margin:0;min-width:145px}
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.col{background:#eceef1;border-radius:15px;padding:12px;min-height:270px}.col h2{font-size:14px;margin:5px 4px 10px}.card{background:#fff;border:1px solid #e2e4e8;border-radius:14px;padding:14px;margin:10px 0}.card.high{border-left:4px solid #c53b3b}.card.medium{border-left:4px solid #c49a26}.card.low{border-left:4px solid #4e8a5b}.title{font-weight:850;font-size:15px}.desc{margin-top:6px;font-size:13px;line-height:1.4}.meta{font-size:12px;color:#737780;margin-top:8px}.cardactions{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}.badge{display:inline-block;font-size:11px;font-weight:800;border-radius:20px;padding:4px 7px;background:#f0f1f3;margin-top:8px}.overdue{color:#a22;background:#fff0f0}.empty{color:#81858d;text-align:center;padding:35px 5px;font-size:13px}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}.modal.show{display:flex}.box{width:min(560px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;padding:22px}.box h2{margin-top:0}.foot{display:flex;justify-content:flex-end;gap:8px;margin-top:15px}
+.notice{position:fixed;right:18px;bottom:18px;z-index:30;background:#17181a;color:#fff;border-radius:13px;padding:13px 16px;max-width:330px;display:none;box-shadow:0 10px 30px #0004}.notice.show{display:block}
+#bell{position:relative}.dot{position:absolute;right:3px;top:2px;width:8px;height:8px;background:#d33;border-radius:50%;display:none}
+@media(max-width:850px){.cover{height:215px}.coverText{left:18px;bottom:17px}.coverText h1{font-size:26px}.stats{grid-template-columns:repeat(2,1fr)}.board{grid-template-columns:1fr}.hero{align-items:flex-start;flex-direction:column}.wrap{padding:16px}.topin{padding:12px 16px}}
+</style>
+</head>
+<body class="loginbg">
 <div id="login" class="login">
-<h1>Tarefas — Luisa & Enzo</h1><p class="muted">Área privada</p>
-<label>Quem está entrando?</label><select id="user"><option>Luisa</option><option>Enzo</option></select>
-<label>Senha</label><input id="pass" type="password" placeholder="Senha">
-<button class="primary" style="width:100%" onclick="doLogin()">Entrar</button><p id="msg" class="muted"></p>
+  <div class="avatar">❤️</div>
+  <h1>Luisa & Enzo</h1>
+  <p class="muted">Nosso painel de tarefas</p>
+  <label>Quem está entrando?</label>
+  <select id="user"><option>Luisa</option><option>Enzo</option></select>
+  <label>Senha</label><input id="pass" type="password" placeholder="Senha">
+  <button class="primary" style="width:100%;margin-top:14px" onclick="login()">Entrar</button>
+  <p id="loginmsg" class="muted"></p>
 </div>
-<div id="app" style="display:none">
-<header><h1>Tarefas — Luisa & Enzo</h1><div><span id="who"></span> <button class="ghost" onclick="logout()">Sair</button></div></header>
-<div class="wrap">
-<button class="primary" onclick="openM()">+ Nova tarefa</button>
-<div class="stats">
-<div class="stat"><div class="num" id="all">0</div><div class="muted">Todas</div></div>
-<div class="stat"><div class="num" id="pn">0</div><div class="muted">Pendentes</div></div>
-<div class="stat"><div class="num" id="dn">0</div><div class="muted">Em andamento</div></div>
-<div class="stat"><div class="num" id="cn">0</div><div class="muted">Concluídas</div></div>
+
+<div id="app" class="app">
+<header class="top"><div class="topin">
+  <div class="brand">❤️ Luisa & Enzo</div>
+  <div class="who"><button id="bell" class="soft" onclick="showNotifications()">🔔<span id="dot" class="dot"></span></button><div class="avatar" id="avatar"></div><b id="who"></b><button class="soft" onclick="logout()">Sair</button></div>
+</div></header>
+<main class="wrap">
+  <div class="cover">
+      <img src="foto-luisa-enzo.png" alt="Luisa e Enzo">
+      <div class="coverShade"></div>
+      <div class="coverText">
+        <div class="small">NOSSO PAINEL</div>
+        <h1>Luisa & Enzo ❤️</h1>
+        <div>Organizados juntos, de um jeito simples.</div>
+      </div>
+    </div>
+    <div class="hero">
+    <div><h1 id="greet"></h1><div class="muted" id="subtitle"></div></div>
+    <div class="actions"><button class="soft" onclick="requestNotify()">🔔 Ativar notificações</button><button class="primary" onclick="openModal()">+ Nova tarefa</button></div>
+  </div>
+
+  <section class="stats">
+    <div class="stat"><div class="muted">Todas</div><div class="num" id="all">0</div></div>
+    <div class="stat"><div class="muted">Pendentes</div><div class="num" id="pending">0</div></div>
+    <div class="stat"><div class="muted">Em andamento</div><div class="num" id="doing">0</div></div>
+    <div class="stat"><div class="muted">Concluídas</div><div class="num" id="done">0</div></div>
+    <div class="stat"><div class="muted">Atrasadas</div><div class="num" id="overdue">0</div></div>
+  </section>
+
+  <div class="toolbar">
+    <input id="search" placeholder="🔎 Procurar tarefa..." oninput="render()">
+    <select id="filter" onchange="render()"><option value="all">Todos</option><option value="Luisa">Luisa</option><option value="Enzo">Enzo</option></select>
+    <select id="sort" onchange="render()"><option value="new">Mais recentes</option><option value="due">Prazo</option><option value="priority">Prioridade</option></select>
+  </div>
+
+  <div class="board">
+    <section class="col"><h2>🔴 PENDENTES</h2><div id="p"></div></section>
+    <section class="col"><h2>🟡 EM ANDAMENTO</h2><div id="d"></div></section>
+    <section class="col"><h2>🟢 CONCLUÍDAS</h2><div id="c"></div></section>
+  </div>
+</main>
 </div>
-<div class="board">
-<section class="col"><h2>🔴 PENDENTES</h2><div id="p"></div></section>
-<section class="col"><h2>🟡 EM ANDAMENTO</h2><div id="d"></div></section>
-<section class="col"><h2>🟢 CONCLUÍDAS</h2><div id="c"></div></section>
-</div></div></div>
-<div id="modal" class="modal"><div class="box"><h2>Nova tarefa</h2>
-<label>Tarefa</label><input id="title" placeholder="Ex.: Criar anúncio do Onix">
-<label>Descrição</label><textarea id="desc" rows="3"></textarea>
+
+<div id="modal" class="modal"><div class="box">
+<h2>Nova tarefa</h2>
+<label>O que precisa ser feito?</label><input id="title" placeholder="Ex.: Criar anúncio do Onix">
+<label>Detalhes</label><textarea id="desc" rows="3" placeholder="Opcional"></textarea>
 <label>Responsável</label><select id="assignee"><option>Luisa</option><option>Enzo</option></select>
 <label>Prazo</label><input id="due" type="date">
 <label>Prioridade</label><select id="priority"><option value="high">Alta</option><option value="medium" selected>Média</option><option value="low">Baixa</option></select>
-<div style="display:flex;gap:8px;justify-content:flex-end"><button class="ghost" onclick="closeM()">Cancelar</button><button class="primary" onclick="createTask()">Criar tarefa</button></div>
+<div class="foot"><button class="soft" onclick="closeModal()">Cancelar</button><button class="primary" onclick="createTask()">Criar tarefa</button></div>
 </div></div>
+
+<div id="notice" class="notice"></div>
+
 <script>
 const API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-luisa-enzo";
-let token=localStorage.getItem("tl_token"), me=localStorage.getItem("tl_user"), tasks=[], timer;
+let token=localStorage.getItem("tl_token"),me=localStorage.getItem("tl_user"),tasks=[],previousIds=new Set(),firstLoad=true;
+
 const $=id=>document.getElementById(id);
-async function req(path,opt={}){opt.headers={...(opt.headers||{}),"Content-Type":"application/json",...(token?{"Authorization":"Bearer "+token}:{})};const r=await fetch(API+path,opt);const x=await r.json();if(r.status===401){logout();throw Error(x.error||"Sessão expirada")}if(!r.ok)throw Error(x.error||"Erro");return x}
-async function doLogin(){try{const x=await req("/login",{method:"POST",body:JSON.stringify({user:$("user").value,password:$("pass").value})});token=x.token;me=x.user;localStorage.setItem("tl_token",token);localStorage.setItem("tl_user",me);show()}catch(e){$("msg").textContent=e.message}}
-function show(){$("login").style.display="none";$("app").style.display="block";$("who").textContent=me;$("assignee").value=me;load();clearInterval(timer);timer=setInterval(load,3000)}
+async function req(path,opt={}){
+  opt.headers={...(opt.headers||{}),"Content-Type":"application/json",...(token?{"Authorization":"Bearer "+token}:{})};
+  const r=await fetch(API+path,opt); const x=await r.json();
+  if(r.status===401){logout();throw Error(x.error||"Sessão expirada")}
+  if(!r.ok)throw Error(x.error||"Erro");
+  return x;
+}
+async function login(){
+ try{
+  const x=await req("/login",{method:"POST",body:JSON.stringify({user:$("user").value,password:$("pass").value})});
+  token=x.token;me=x.user;localStorage.setItem("tl_token",token);localStorage.setItem("tl_user",me);showApp();
+ }catch(e){$("loginmsg").textContent=e.message}
+}
+function showApp(){
+ $("login").style.display="none";$("app").style.display="block";$("who").textContent=me;$("avatar").textContent=me==="Luisa"?"👩":"👨";$("assignee").value=me;
+ $("greet").textContent=(new Date().getHours()<12?"Bom dia, ":new Date().getHours()<18?"Boa tarde, ":"Boa noite, ")+me+"!";
+ $("subtitle").textContent="Aqui está tudo que vocês precisam fazer.";
+ load(); setInterval(load,3000);
+}
 function logout(){localStorage.removeItem("tl_token");localStorage.removeItem("tl_user");location.reload()}
-async function load(){try{tasks=await req("/tasks");render()}catch(e){}}
-function openM(){$("modal").classList.add("show")}function closeM(){$("modal").classList.remove("show")}
-async function createTask(){try{const title=$("title").value.trim();if(!title)return alert("Digite a tarefa.");await req("/tasks",{method:"POST",body:JSON.stringify({title,description:$("desc").value,assignee:$("assignee").value,due_date:$("due").value||null,priority:$("priority").value,status:"pending",created_by:me})});$("title").value="";$("desc").value="";$("due").value="";closeM();load()}catch(e){alert(e.message)}}
-async function status(id,s){try{await req("/tasks/"+id,{method:"PATCH",body:JSON.stringify({status:s})});load()}catch(e){alert(e.message)}}
+async function load(){
+ try{
+  const fresh=await req("/tasks");
+  const ids=new Set(fresh.map(x=>String(x.id)));
+  if(!firstLoad){
+   const added=fresh.filter(x=>!previousIds.has(String(x.id)) && x.assignee===me);
+   added.forEach(t=>notify("Nova tarefa",t.title));
+  }
+  previousIds=ids;firstLoad=false;tasks=fresh;render();
+ }catch(e){}
+}
+function openModal(){$("modal").classList.add("show")}
+function closeModal(){$("modal").classList.remove("show")}
+async function createTask(){
+ try{
+  const title=$("title").value.trim();if(!title)return alert("Digite a tarefa.");
+  await req("/tasks",{method:"POST",body:JSON.stringify({title,description:$("desc").value,assignee:$("assignee").value,due_date:$("due").value||null,priority:$("priority").value,status:"pending",created_by:me})});
+  $("title").value="";$("desc").value="";$("due").value="";closeModal();notify("Tarefa criada",title);load();
+ }catch(e){alert(e.message)}
+}
+async function setStatus(id,status){
+ try{await req("/tasks/"+id,{method:"PATCH",body:JSON.stringify({status}));load()}catch(e){alert(e.message)}
+}
+function requestNotify(){
+ if(!("Notification" in window)){alert("Seu navegador não oferece notificações.");return}
+ Notification.requestPermission().then(p=>{if(p==="granted")notify("Notificações ativadas","Você será avisado quando uma tarefa nova aparecer enquanto o site estiver aberto.")})
+}
+function notify(title,body){
+ $("notice").innerHTML="<b>"+esc(title)+"</b><br><span style='font-size:13px'>"+esc(body)+"</span>";$("notice").classList.add("show");$("dot").style.display="block";setTimeout(()=>$("notice").classList.remove("show"),5000);
+ if("Notification" in window && Notification.permission==="granted")new Notification(title,{body});
+}
+function showNotifications(){ $("dot").style.display="none"; alert("Os avisos aparecem aqui e como notificação do navegador quando autorizados.") }
 function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-function card(t){let n=t.status==="pending"?"doing":t.status==="doing"?"done":"pending",l=t.status==="pending"?"Iniciar":t.status==="doing"?"Concluir":"Reabrir";return `<div class="card ${t.priority}"><div class="title">${esc(t.title)}</div>${t.description?`<div class="meta">${esc(t.description)}</div>`:""}<div class="meta">Responsável: <b>${esc(t.assignee)}</b>${t.due_date?" · Prazo: "+esc(t.due_date):""}</div><div class="actions"><button class="ghost" onclick="status('${t.id}','${n}')">${l}</button>${t.status!=="pending"?`<button class="ghost" onclick="status('${t.id}','pending')">Pendente</button>`:""}</div></div>`}
-function render(){let p=tasks.filter(x=>x.status==="pending"),d=tasks.filter(x=>x.status==="doing"),c=tasks.filter(x=>x.status==="done");$("p").innerHTML=p.map(card).join("")||'<p class="muted">Nada pendente.</p>';$("d").innerHTML=d.map(card).join("")||'<p class="muted">Nada em andamento.</p>';$("c").innerHTML=c.map(card).join("")||'<p class="muted">Nada concluído.</p>';$("all").textContent=tasks.length;$("pn").textContent=p.length;$("dn").textContent=d.length;$("cn").textContent=c.length}
-if(token&&me)show();
-</script></body></html>
+function overdue(t){return t.due_date && t.status!=="done" && new Date(t.due_date+"T23:59:59")<new Date()}
+function card(t){
+ let next=t.status==="pending"?"doing":t.status==="doing"?"done":"pending",lab=t.status==="pending"?"Iniciar":t.status==="doing"?"Concluir":"Reabrir";
+ return `<div class="card ${t.priority}"><div class="title">${esc(t.title)}</div>
+ ${t.description?`<div class="desc">${esc(t.description)}</div>`:""}
+ <span class="badge">${t.priority==="high"?"Alta":t.priority==="medium"?"Média":"Baixa"}</span>
+ <div class="meta">👤 ${esc(t.assignee)} ${t.due_date?" · 📅 "+esc(t.due_date):""} ${overdue(t)?'<span class="badge overdue">ATRASADA</span>':""}</div>
+ <div class="cardactions"><button class="soft" onclick="setStatus('${t.id}','${next}')">${lab}</button>${t.status!=="pending"?`<button class="soft" onclick="setStatus('${t.id}','pending')">Pendente</button>`:""}</div></div>`;
+}
+function render(){
+ let q=$("search").value.toLowerCase(),f=$("filter").value,s=$("sort").value;
+ let a=tasks.filter(t=>(f==="all"||t.assignee===f)&&((t.title||"").toLowerCase().includes(q)||(t.description||"").toLowerCase().includes(q)));
+ if(s==="due")a.sort((x,y)=>(x.due_date||"9999").localeCompare(y.due_date||"9999"));
+ if(s==="priority"){let w={high:0,medium:1,low:2};a.sort((x,y)=>w[x.priority]-w[y.priority])}
+ const p=a.filter(x=>x.status==="pending"),d=a.filter(x=>x.status==="doing"),c=a.filter(x=>x.status==="done");
+ $("p").innerHTML=p.map(card).join("")||'<div class="empty">Nada por aqui.</div>';
+ $("d").innerHTML=d.map(card).join("")||'<div class="empty">Nada por aqui.</div>';
+ $("c").innerHTML=c.map(card).join("")||'<div class="empty">Nada por aqui.</div>';
+ $("all").textContent=tasks.length;$("pending").textContent=tasks.filter(x=>x.status==="pending").length;$("doing").textContent=tasks.filter(x=>x.status==="doing").length;$("done").textContent=tasks.filter(x=>x.status==="done").length;$("overdue").textContent=tasks.filter(overdue).length;
+}
+if(token&&me)showApp();
+</script>
+</body></html>
