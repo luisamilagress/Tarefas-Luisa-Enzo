@@ -1,0 +1,22 @@
+{
+  "name": "Luisa & Enzo — Tarefas",
+  "short_name": "Luisa & Enzo",
+  "description": "Painel compartilhado de tarefas e rotina diária de Luisa e Enzo.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f7f9",
+  "theme_color": "#17181a",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

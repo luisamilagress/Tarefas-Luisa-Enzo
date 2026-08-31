@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#17181a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Luisa & Enzo">
 <title>Luisa & Enzo — Tarefas</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#f6f7f9;color:#18191b}
@@ -70,7 +75,7 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
     </div>
     <div class="hero">
     <div><h1 id="greet"></h1><div class="muted" id="subtitle"></div></div>
-    <div class="actions"><button class="soft" onclick="requestNotify()">🔔 Ativar notificações</button><button class="primary" onclick="openModal()">+ Nova tarefa</button></div>
+    <div class="actions"><button id="installBtn" class="soft" style="display:none" onclick="installApp()">📲 Instalar app</button><button class="soft" onclick="requestNotify()">🔔 Ativar notificações</button><button class="primary" onclick="openModal()">+ Nova tarefa</button></div>
   </div>
 
   <section class="stats">
@@ -375,5 +380,32 @@ function render(){renderDaily();
  $("todayList").innerHTML=todays.length?todays.map(t=>`<div class="todayItem"><div><div class="todayTitle">${esc(t.title)}</div><div class="muted">${esc(t.assignee)} · ${priorityText(t)}</div></div><button class="soft" onclick="openEdit('${t.id}')">Abrir</button></div>`).join(""):'<div class="empty" style="padding:18px 5px">Nada urgente para hoje 🎉</div>';
 }
 if(token&&me)showApp();
+
+let deferredInstallPrompt=null;
+window.addEventListener("beforeinstallprompt",(e)=>{
+  e.preventDefault();
+  deferredInstallPrompt=e;
+  const b=document.getElementById("installBtn");
+  if(b)b.style.display="inline-block";
+});
+async function installApp(){
+  if(!deferredInstallPrompt){
+    alert("No iPhone: abra no Safari, toque em Compartilhar e depois em 'Adicionar à Tela de Início'.");
+    return;
+  }
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt=null;
+  const b=document.getElementById("installBtn");
+  if(b)b.style.display="none";
+}
+window.addEventListener("appinstalled",()=>{
+  const b=document.getElementById("installBtn");
+  if(b)b.style.display="none";
+});
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+
 </script>
 </body></html>
