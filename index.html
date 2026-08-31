@@ -27,11 +27,18 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 .personNums{display:flex;gap:14px;margin-top:13px;font-size:12px;color:#6f747c}.personNums b{color:#17181a}.personCard.compact{display:flex;align-items:center;justify-content:center}
 .focusGrid{display:grid;grid-template-columns:1.6fr .8fr;gap:12px;margin:0 0 14px}.focusCard,.progressCard{background:#fff;border:1px solid #e1e4e8;border-radius:17px;padding:16px}.focusHead{display:flex;justify-content:space-between;align-items:center;gap:10px}.focusHead h3{margin:3px 0 0;font-size:17px}.eyebrow{font-size:10px;font-weight:900;letter-spacing:1.6px;color:#8a8f97}.todayList{margin-top:12px;display:grid;gap:8px}.todayItem{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#f7f8fa;border-radius:11px;padding:10px 12px}.todayTitle{font-weight:800;font-size:13px}.progressBig{font-size:36px;font-weight:900;margin-top:8px}.progressBar{height:9px;background:#eceef1;border-radius:20px;overflow:hidden;margin:13px 0}.progressBar>div{height:100%;width:0;background:#17181a;border-radius:20px;transition:.3s}.miniStats{display:flex;gap:16px;font-size:12px;color:#6f747c}.smartFilters{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}.smartFilters button{padding:8px 11px}.taskSub{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px}.created{font-size:11px;color:#9599a0}.editBtn{background:#f5f6f8}.statusDone{opacity:.72}.todayBadge{background:#eef4ff}.lateBadge{background:#fff0f0;color:#a22}
 .toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0}.toolbar select,.toolbar input{width:auto;margin:0;min-width:145px}
+
+.dailySection{background:#fff;border:1px solid #e1e4e8;border-radius:18px;padding:18px;margin:16px 0 20px}
+.dailyHead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}.dailyHead h2{margin:4px 0 5px;font-size:18px}
+.dailyProgress{display:flex;align-items:center;gap:14px;margin:15px 0}.dailyBar{height:9px;background:#eceef1;border-radius:20px;overflow:hidden;flex:1}.dailyBar>div{height:100%;width:0;background:#17181a;transition:.3s}
+.dailyList{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.dailyItem{display:flex;align-items:center;gap:12px;border:1px solid #e3e5e8;border-radius:14px;padding:13px;background:#fafbfc}
+.dailyItem.done{opacity:.62;background:#f1f7f2}.dailyCheck{width:26px;height:26px;border-radius:8px;border:2px solid #b8bdc4;background:#fff;display:grid;place-items:center;flex:0 0 auto;padding:0}
+.dailyItem.done .dailyCheck{background:#17181a;color:#fff;border-color:#17181a}.dailyBody{flex:1}.dailyTitle{font-weight:850;font-size:14px}.dailyMeta{font-size:11px;color:#7b8088;margin-top:4px}.dailyDelete{padding:7px 9px}
 .board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.col{background:#eceef1;border-radius:15px;padding:12px;min-height:270px}.col h2{font-size:14px;margin:5px 4px 10px}.card{background:#fff;border:1px solid #e2e4e8;border-radius:14px;padding:14px;margin:10px 0}.card.high{border-left:4px solid #c53b3b}.card.medium{border-left:4px solid #c49a26}.card.low{border-left:4px solid #4e8a5b}.title{font-weight:850;font-size:15px}.desc{margin-top:6px;font-size:13px;line-height:1.4}.meta{font-size:12px;color:#737780;margin-top:8px}.cardactions{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}.badge{display:inline-block;font-size:11px;font-weight:800;border-radius:20px;padding:4px 7px;background:#f0f1f3;margin-top:8px}.overdue{color:#a22;background:#fff0f0}.empty{color:#81858d;text-align:center;padding:35px 5px;font-size:13px}
 .modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}.modal.show{display:flex}.box{width:min(560px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;padding:22px}.box h2{margin-top:0}.foot{display:flex;justify-content:flex-end;gap:8px;margin-top:15px}
 .notice{position:fixed;right:18px;bottom:18px;z-index:30;background:#17181a;color:#fff;border-radius:13px;padding:13px 16px;max-width:330px;display:none;box-shadow:0 10px 30px #0004}.notice.show{display:block}
 #bell{position:relative}.dot{position:absolute;right:3px;top:2px;width:8px;height:8px;background:#d33;border-radius:50%;display:none}
-@media(max-width:850px){.focusGrid{grid-template-columns:1fr}.people{grid-template-columns:1fr}.personCard.compact{justify-content:flex-start}.cover{height:215px}.coverText{left:18px;bottom:17px}.coverText h1{font-size:26px}.stats{grid-template-columns:repeat(2,1fr)}.board{grid-template-columns:1fr}.hero{align-items:flex-start;flex-direction:column}.wrap{padding:16px}.topin{padding:12px 16px}}
+@media(max-width:850px){.dailyList{grid-template-columns:1fr}.dailyHead{flex-direction:column}.dailyProgress{align-items:flex-start;flex-direction:column}.dailyBar{width:100%;flex:none}.focusGrid{grid-template-columns:1fr}.people{grid-template-columns:1fr}.personCard.compact{justify-content:flex-start}.cover{height:215px}.coverText{left:18px;bottom:17px}.coverText h1{font-size:26px}.stats{grid-template-columns:repeat(2,1fr)}.board{grid-template-columns:1fr}.hero{align-items:flex-start;flex-direction:column}.wrap{padding:16px}.topin{padding:12px 16px}}
 </style>
 </head>
 <body class="loginbg">
@@ -117,7 +124,24 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
     <select id="sort" onchange="render()"><option value="new">Mais recentes</option><option value="due">Prazo</option><option value="priority">Prioridade</option></select>
   </div>
 
-  <div class="board">
+  
+  <section class="dailySection">
+    <div class="dailyHead">
+      <div>
+        <div class="eyebrow">ROTINA DIÁRIA</div>
+        <h2>✅ Tarefas que se repetem todos os dias</h2>
+        <div class="muted">Você marca hoje e amanhã elas aparecem novamente para marcar.</div>
+      </div>
+      <button class="primary" onclick="openDailyModal()">+ Adicionar rotina</button>
+    </div>
+    <div class="dailyProgress">
+      <div><b id="dailyDoneCount">0</b>/<span id="dailyTotalCount">0</span> feitas hoje</div>
+      <div class="dailyBar"><div id="dailyBarFill"></div></div>
+    </div>
+    <div id="dailyList" class="dailyList"></div>
+  </section>
+
+<div class="board">
     <section class="col"><h2>🔴 PENDENTES</h2><div id="p"></div></section>
     <section class="col"><h2>🟡 EM ANDAMENTO</h2><div id="d"></div></section>
     <section class="col"><h2>🟢 CONCLUÍDAS</h2><div id="c"></div></section>
@@ -146,11 +170,25 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 <div class="foot"><button class="soft" onclick="closeEdit()">Cancelar</button><button class="primary" onclick="saveEdit()">Salvar alterações</button></div>
 </div></div>
 
+
+<div id="dailyModal" class="modal"><div class="box">
+<h2>Nova tarefa diária</h2>
+<label>O que precisa ser feito todos os dias?</label>
+<input id="dailyTitle" placeholder="Ex.: Conferir pedidos do Mercado Livre">
+<label>Responsável</label>
+<select id="dailyAssignee"><option>Luisa</option><option>Enzo</option></select>
+<label>Prioridade</label>
+<select id="dailyPriority"><option value="high">Alta</option><option value="medium" selected>Média</option><option value="low">Baixa</option></select>
+<div class="foot"><button class="soft" onclick="closeDailyModal()">Cancelar</button><button class="primary" onclick="createDailyTask()">Adicionar</button></div>
+</div></div>
+
 <div id="notice" class="notice"></div>
 
 <script>
 const API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-luisa-enzo";
-let token=localStorage.getItem("tl_token"),me=localStorage.getItem("tl_user"),tasks=[],previousIds=new Set(),firstLoad=true,smartFilter="all";
+const DELETE_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-delete";
+const DAILY_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-diarias";
+let token=localStorage.getItem("tl_token"),me=localStorage.getItem("tl_user"),tasks=[],dailyTasks=[],previousIds=new Set(),firstLoad=true,smartFilter="all";
 
 const $=id=>document.getElementById(id);
 async function req(path,opt={}){
@@ -173,7 +211,7 @@ function showApp(){
  const other=me==="Luisa"?"Enzo":"Luisa";
  $("mineName").textContent=me;$("otherName").textContent=other;
  $("mineAvatar").textContent=me==="Luisa"?"👩":"👨";$("otherAvatar").textContent=other==="Luisa"?"👩":"👨";
- $("filter").value=me;
+ $("filter").value=me;$("dailyAssignee").value=me;
  syncQuickFilter();
  load(); setInterval(load,3000);
 }
@@ -186,8 +224,47 @@ async function load(){
    const added=fresh.filter(x=>!previousIds.has(String(x.id)) && x.assignee===me);
    added.forEach(t=>notify("Nova tarefa",t.title));
   }
-  previousIds=ids;firstLoad=false;tasks=fresh;render();
+  previousIds=ids;firstLoad=false;tasks=fresh;
+  await loadDaily();
+  render();
  }catch(e){}
+}
+
+async function dailyReq(path,opt={}){
+ opt.headers={...(opt.headers||{}),"Content-Type":"application/json","Authorization":"Bearer "+token};
+ const r=await fetch(DAILY_API+path,opt); const x=await r.json();
+ if(r.status===401){logout();throw Error(x.error||"Sessão expirada")}
+ if(!r.ok)throw Error(x.error||"Erro");
+ return x;
+}
+async function loadDaily(){try{dailyTasks=await dailyReq("");renderDaily()}catch(e){}}
+function openDailyModal(){$("dailyModal").classList.add("show")}
+function closeDailyModal(){$("dailyModal").classList.remove("show")}
+async function createDailyTask(){
+ const title=$("dailyTitle").value.trim();if(!title)return alert("Digite a tarefa diária.");
+ try{
+  await dailyReq("/task",{method:"POST",body:JSON.stringify({title,assignee:$("dailyAssignee").value,priority:$("dailyPriority").value})});
+  $("dailyTitle").value="";closeDailyModal();await loadDaily();
+ }catch(e){alert(e.message)}
+}
+async function toggleDaily(id,done){
+ try{await dailyReq("/check",{method:"PATCH",body:JSON.stringify({id,done})});await loadDaily()}
+ catch(e){alert(e.message)}
+}
+async function deleteDaily(id,title){
+ if(!confirm('Apagar a rotina diária "'+title+'"?'))return;
+ try{await dailyReq("/task?id="+encodeURIComponent(id),{method:"DELETE"});await loadDaily()}
+ catch(e){alert(e.message)}
+}
+function renderDaily(){
+ const mine=dailyTasks.filter(t=>t.assignee===me);
+ const done=mine.filter(t=>t.done_today).length,total=mine.length,pct=total?Math.round(done/total*100):0;
+ $("dailyDoneCount").textContent=done;$("dailyTotalCount").textContent=total;$("dailyBarFill").style.width=pct+"%";
+ $("dailyList").innerHTML=mine.length?mine.map(t=>`<div class="dailyItem ${t.done_today?"done":""}">
+   <button class="dailyCheck" onclick="toggleDaily('${t.id}',${!t.done_today})">${t.done_today?"✓":""}</button>
+   <div class="dailyBody"><div class="dailyTitle">${esc(t.title)}</div><div class="dailyMeta">${priorityText(t)} · ${esc(t.assignee)} · reinicia amanhã</div></div>
+   <button class="danger dailyDelete" onclick="deleteDaily('${t.id}','${esc(t.title).replace(/'/g,"&#39;")}')">🗑️</button>
+ </div>`).join(""):'<div class="empty" style="grid-column:1/-1;padding:22px 5px">Nenhuma rotina diária ainda.</div>';
 }
 function openModal(){$("modal").classList.add("show")}
 function closeModal(){$("modal").classList.remove("show")}
@@ -200,6 +277,21 @@ async function createTask(){
 }
 async function setStatus(id,status){
  try{await req("/tasks/"+id,{method:"PATCH",body:JSON.stringify({status})});load()}catch(e){alert(e.message)}
+}
+async function deleteTask(id){
+ const t=tasks.find(x=>String(x.id)===String(id));
+ if(!t)return;
+ if(!confirm('Excluir a tarefa "'+t.title+'"?\n\nEssa ação não poderá ser desfeita.'))return;
+ try{
+  const r=await fetch(DELETE_API+"?id="+encodeURIComponent(id),{
+   method:"DELETE",
+   headers:{"Authorization":"Bearer "+token}
+  });
+  const x=await r.json();
+  if(!r.ok)throw Error(x.error||"Erro ao excluir");
+  notify("Tarefa excluída",t.title);
+  load();
+ }catch(e){alert("Não foi possível excluir: "+e.message)}
 }
 function requestNotify(){
  if(!("Notification" in window)){alert("Seu navegador não oferece notificações.");return}
@@ -253,7 +345,7 @@ function syncQuickFilter(){
  else if(v===other)$("otherBtn").classList.add("active");
  else $("allBtn").classList.add("active");
 }
-function render(){
+function render(){renderDaily();
  let q=$("search").value.toLowerCase(),f=$("filter").value,s=$("sort").value;
  let a=tasks.filter(t=>(f==="all"||t.assignee===f)&&((t.title||"").toLowerCase().includes(q)||(t.description||"").toLowerCase().includes(q)));
  if(smartFilter==="today")a=a.filter(isToday);
