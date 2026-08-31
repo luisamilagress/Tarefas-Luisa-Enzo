@@ -140,7 +140,7 @@ async function createTask(){
  }catch(e){alert(e.message)}
 }
 async function setStatus(id,status){
- try{await req("/tasks/"+id,{method:"PATCH",body:JSON.stringify({status}));load()}catch(e){alert(e.message)}
+ try{await req("/tasks/"+id,{method:"PATCH",body:JSON.stringify({status})});load()}catch(e){alert(e.message)}
 }
 function requestNotify(){
  if(!("Notification" in window)){alert("Seu navegador não oferece notificações.");return}
