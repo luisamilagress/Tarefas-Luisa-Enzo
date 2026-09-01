@@ -182,7 +182,21 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 
 <div id="modal" class="modal"><div class="box">
 <h2>Nova tarefa</h2>
+<label>Tipo</label>
+<select id="taskType" onchange="toggleTaskTypeFields()">
+<option value="task">Tarefa normal</option>
+<option value="problem">Problema</option>
+<option value="ad">Anúncio</option>
+</select>
 <label>O que precisa ser feito?</label><input id="title" placeholder="Ex.: Criar anúncio do Onix">
+<div id="problemFields" style="display:none">
+<label>Categoria do problema</label>
+<select id="problemCategory"><option>SAC</option><option>Mercado Livre</option><option>Estoque</option><option>Devolução</option><option>Anúncios</option><option>Erro</option><option>Outro</option></select>
+</div>
+<div id="adFields" style="display:none">
+<label>Etapa do anúncio</label>
+<select id="adStage"><option value="photo">Falta foto</option><option value="description">Falta descrição</option><option value="register">Cadastrar</option><option value="published">Publicado</option></select>
+</div>
 <label>Detalhes</label><textarea id="desc" rows="3" placeholder="Opcional"></textarea>
 <label>Responsável</label><select id="assignee" onchange="fillClientSelect()"><option>Luisa</option><option>Enzo</option></select>
 <label>Cliente / Conta</label><div class="clientPick"><select id="client"><option value="">Sem cliente</option></select><button class="soft" type="button" onclick="openClientModal()">+ Cliente</button></div>
@@ -311,7 +325,7 @@ function showApp(){
 function logout(){localStorage.removeItem("tl_token");localStorage.removeItem("tl_user");location.reload()}
 async function load(){
  try{
-  await loadOrganizer();
+  loadOrganizer().catch(()=>{});
   const fresh=await req("/tasks");
   const ids=new Set(fresh.map(x=>String(x.id)));
   if(!firstLoad){
