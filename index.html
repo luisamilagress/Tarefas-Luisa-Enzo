@@ -56,7 +56,7 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 .workHub{position:fixed;inset:0;background:#f5f6f8;z-index:95;display:none;overflow:auto}.workHub.show{display:block}.workHead{position:sticky;top:0;background:#fff;border-bottom:1px solid #e1e4e8;padding:15px max(18px,calc((100vw - 1160px)/2));display:flex;justify-content:space-between;align-items:center;z-index:3}.workBody{max-width:1160px;margin:auto;padding:20px}.workTabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.workSection{background:#fff;border:1px solid #e1e4e8;border-radius:18px;padding:18px}.sectionTitle{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}.sectionTitle h2,.workSection h2{margin:0 0 4px}.hubGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.hubMetric{padding:14px;background:#f7f8fa;border-radius:13px}.hubMetric b{display:block;font-size:25px}.problemRow,.clientTaskRow,.noteRow,.recRow{border:1px solid #e3e5e8;border-radius:12px;padding:12px;margin:8px 0;background:#fff}.problemRow{display:grid;grid-template-columns:1.4fr .8fr .7fr auto;gap:10px;align-items:center}.adBoard{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.adCol{background:#f1f2f4;border-radius:14px;padding:11px;min-height:260px}.adMini{background:#fff;border:1px solid #e0e3e7;border-radius:11px;padding:10px;margin-top:9px}.adMiniTitle{font-weight:850;font-size:13px}.clientDash{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.clientDashCard{border:1px solid #e1e4e8;border-radius:14px;padding:14px;background:#fafbfc;cursor:pointer}.clientDashCard:hover{border-color:#999}.clientDashCard b{display:block;font-size:15px}.clientDashCard .count{font-size:25px;font-weight:950;margin-top:8px}.clientDetailBox{margin-top:16px;border-top:1px solid #eee;padding-top:16px}.noteRow{display:flex;justify-content:space-between;gap:10px;align-items:center}.noteText{flex:1}.recRow{display:grid;grid-template-columns:1.4fr .7fr .7fr auto;gap:10px;align-items:center}.topModal{z-index:130}.attachUpload{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}.attachItem{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;background:#f5f6f8;border-radius:10px;margin-top:8px}.attachItem a{color:#17181a;font-weight:800;text-decoration:none}
 @media(max-width:950px){.board4,.adBoard{grid-template-columns:1fr 1fr}.hubGrid{grid-template-columns:1fr 1fr}.clientDash{grid-template-columns:1fr 1fr}.problemRow,.recRow{grid-template-columns:1fr 1fr}}
 @media(max-width:650px){.commandCenter{grid-template-columns:1fr}.board4,.adBoard,.hubGrid,.clientDash{grid-template-columns:1fr}.problemRow,.recRow{grid-template-columns:1fr}.captureRow{grid-template-columns:1fr}.sectionTitle{flex-direction:column}}
-</style>
+.dailyReviewGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;margin:16px 0}.dailyReviewGrid .dailySection{margin:0}.reviewPanel{background:#fff;border:1px solid #e1e4e8;border-radius:18px;padding:18px}.reviewStats{display:flex;justify-content:space-between;align-items:center;background:#f7f8fa;border-radius:12px;padding:10px 12px;margin:15px 0}.reviewStats b{font-size:22px}.reviewRow{border:1px solid #e1e4e8;border-radius:12px;padding:12px;margin:8px 0}.reviewTop{display:flex;justify-content:space-between;gap:10px}.reviewClient{font-weight:900}.reviewMeta{font-size:12px;color:#6d7177;margin-top:4px}.reviewDays{font-size:11px;font-weight:900;padding:5px 8px;border-radius:999px;background:#fff3cd;color:#755600;white-space:nowrap}.reviewDays.old{background:#ffe9e9;color:#9b2929}.reviewActions{display:flex;gap:6px;margin-top:9px}.historyTitle{font-size:12px;font-weight:900;color:#777;margin:14px 0 6px}.reviewDone{opacity:.7}@media(max-width:850px){.dailyReviewGrid{grid-template-columns:1fr}}</style>
 </head>
 <body class="loginbg">
 <div id="login" class="login">
@@ -155,7 +155,7 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
   </div>
 
   
-  <section class="dailySection">
+  <div class="dailyReviewGrid"><section class="dailySection">
     <div class="dailyHead">
       <div>
         <div class="eyebrow">ROTINA DIÁRIA</div>
@@ -169,7 +169,7 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
       <div class="dailyBar"><div id="dailyBarFill"></div></div>
     </div>
     <div id="dailyList" class="dailyList"></div>
-  </section>
+  </section><section class="reviewPanel"><div class="dailyHead"><div><h2>📣 Anúncios em Revisão</h2><p>Quantidade, cliente e há quanto tempo estão em revisão.</p></div><button class="primary" onclick="openReviewModal()">+ Adicionar</button></div><div class="reviewStats"><div><b id="reviewQty">0</b><span> anúncios em revisão</span></div><button class="linkBtn" onclick="toggleReviewHistory()">Ver histórico</button></div><div id="reviewList"></div><div id="reviewHistory" style="display:none"></div></section></div>
 
 <div class="board board4">
     <section class="col"><h2>🔴 PENDENTES</h2><div id="p"></div></section>
@@ -234,7 +234,7 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 </div></div>
 
 <div id="clientModal" class="modal"><div class="box"><h2>Clientes / Contas</h2><p class="muted">Cadastre uma vez e depois é só escolher na tarefa.</p><label>Cliente de quem?</label><select id="clientOwner" onchange="renderClientManager()"><option>Luisa</option><option>Enzo</option></select><label>Nome do cliente</label><input id="clientName" placeholder="Ex.: DAC, Marcel"><div class="foot"><button class="soft" onclick="closeClientModal()">Cancelar</button><button class="primary" onclick="addClient()">Adicionar</button></div><div id="clientManagerList" class="clientManagerList"></div></div></div>
-<div id="workHub" class="workHub">
+<div id="reviewModal" class="modal topModal"><div class="box"><h2>📣 Anúncios em Revisão</h2><label>Responsável</label><select id="reviewOwner" onchange="fillReviewClients()"><option>Luisa</option><option>Enzo</option></select><label>Cliente</label><select id="reviewClient"></select><label>Quantidade de anúncios</label><input id="reviewQuantity" type="number" min="1" placeholder="Ex.: 25"><label>Data que entrou em revisão</label><input id="reviewDate" type="date"><div class="foot"><button class="soft" onclick="closeReviewModal()">Cancelar</button><button class="primary" onclick="saveReview()">Salvar</button></div></div></div><div id="workHub" class="workHub">
   <div class="workHead"><div><b>🧭 Organização do trabalho</b><div class="muted">Tudo no lugar sem complicar.</div></div><button class="soft" onclick="closeWorkHub()">✕</button></div>
   <div class="workBody">
     <div class="workTabs">
@@ -295,6 +295,7 @@ const CLIENT_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-
 const CHAT_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/tarefas-chat";
 const FIN_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/duo-financeiro";
 const ORG_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/duo-organizer";
+const REVIEW_API="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/duo-ad-reviews";
 let token=localStorage.getItem("tl_token"),me=localStorage.getItem("tl_user"),tasks=[],dailyTasks=[],clients=[],quickNotes=[],recurringTemplates=[],previousIds=new Set(),firstLoad=true,smartFilter="all",viewPerson=null,workView="tasks";
 
 const $=id=>document.getElementById(id);
@@ -532,12 +533,23 @@ function render(){renderDaily();
  const todays=visibleBase.filter(t=>isToday(t)&&t.status!=="done").slice(0,4);
  $("todayCount").textContent=visibleBase.filter(t=>isToday(t)&&t.status!=="done").length;
  $("lateCount").textContent=visibleBase.filter(overdue).length;
- renderDoNow();renderWorkHub(); $("todayList").innerHTML=todays.length?todays.map(t=>`<div class="todayItem"><div><div class="todayTitle">${esc(t.title)}</div><div class="muted">${esc(t.assignee)} · ${priorityText(t)}</div></div><button class="soft" onclick="openEdit('${t.id}')">Abrir</button></div>`).join(""):'<div class="empty" style="padding:18px 5px">Nada urgente para hoje 🎉</div>';
+ renderDoNow();renderWorkHub();renderReviews(); $("todayList").innerHTML=todays.length?todays.map(t=>`<div class="todayItem"><div><div class="todayTitle">${esc(t.title)}</div><div class="muted">${esc(t.assignee)} · ${priorityText(t)}</div></div><button class="soft" onclick="openEdit('${t.id}')">Abrir</button></div>`).join(""):'<div class="empty" style="padding:18px 5px">Nada urgente para hoje 🎉</div>';
 }
 if(token&&me)showApp();
 
 
-let invoices=[],expenses=[];
+async function reviewReq(path="",opt={}){opt.headers={...(opt.headers||{}),"Content-Type":"application/json","Authorization":"Bearer "+token};const r=await fetch(REVIEW_API+path,opt),x=await r.json();if(!r.ok)throw Error(x.error||"Erro");return x}
+async function loadReviews(){if(!token)return;try{adReviews=await reviewReq();renderReviews()}catch(e){}}
+function reviewDays(s){const a=new Date(s+"T12:00:00"),b=new Date();b.setHours(12,0,0,0);return Math.max(0,Math.floor((b-a)/86400000))}
+function renderReviews(){if(!$("reviewList"))return;const owner=viewPerson||me,a=adReviews.filter(x=>x.owner===owner&&x.status==="reviewing"),done=adReviews.filter(x=>x.owner===owner&&x.status==="done");$("reviewQty").textContent=a.reduce((s,x)=>s+Number(x.quantity||0),0);$("reviewList").innerHTML=a.length?a.map(x=>{const d=reviewDays(x.review_date);return `<div class="reviewRow"><div class="reviewTop"><div><div class="reviewClient">🏢 ${esc(x.client)}</div><div class="reviewMeta"><b>${x.quantity}</b> anúncio(s) · ${new Date(x.review_date+"T12:00:00").toLocaleDateString("pt-BR")}</div></div><span class="reviewDays ${d>=3?"old":""}">${d===0?"Hoje":d===1?"1 dia":d+" dias"}</span></div><div class="reviewActions"><button class="soft" onclick="finishReview('${x.id}')">✓ Finalizar</button><button class="danger" onclick="deleteReview('${x.id}')">🗑</button></div></div>`}).join(""):'<div class="empty">Nenhum anúncio em revisão.</div>';$("reviewHistory").innerHTML='<div class="historyTitle">HISTÓRICO</div>'+(done.length?done.map(x=>`<div class="reviewRow reviewDone"><b>✓ ${esc(x.client)}</b><div class="reviewMeta">${x.quantity} anúncio(s) · iniciou ${new Date(x.review_date+"T12:00:00").toLocaleDateString("pt-BR")}</div></div>`).join(""):'<div class="empty">Sem histórico ainda.</div>')}
+function openReviewModal(){$("reviewOwner").value=viewPerson||me;fillReviewClients();$("reviewDate").value=localDay();$("reviewQuantity").value="";$("reviewModal").classList.add("show")}
+function closeReviewModal(){$("reviewModal").classList.remove("show")}
+function fillReviewClients(){const o=$("reviewOwner").value,a=clients.filter(c=>c.owner===o);$("reviewClient").innerHTML=a.length?a.map(c=>`<option>${esc(c.name)}</option>`).join(""):'<option value="">Cadastre um cliente primeiro</option>'}
+async function saveReview(){const client=$("reviewClient").value,q=Number($("reviewQuantity").value),date=$("reviewDate").value;if(!client||!q||!date)return alert("Preencha cliente, quantidade e data.");try{await reviewReq("",{method:"POST",body:JSON.stringify({owner:$("reviewOwner").value,client,quantity:q,review_date:date,status:"reviewing"})});closeReviewModal();loadReviews()}catch(e){alert(e.message)}}
+async function finishReview(id){try{await reviewReq("?id="+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify({status:"done",completed_at:new Date().toISOString()})});loadReviews()}catch(e){alert(e.message)}}
+async function deleteReview(id){if(!confirm("Excluir este registro?"))return;try{await reviewReq("?id="+encodeURIComponent(id),{method:"DELETE"});loadReviews()}catch(e){alert(e.message)}}
+function toggleReviewHistory(){const e=$("reviewHistory");e.style.display=e.style.display==="none"?"block":"none"}
+let invoices=[],expenses=[],adReviews=[];
 const money=n=>Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 async function finReq(kind,opt={}){opt.headers={...(opt.headers||{}),"Content-Type":"application/json","Authorization":"Bearer "+token};const r=await fetch(FIN_API+"/"+kind,opt),x=await r.json();if(!r.ok)throw Error(x.error||"Erro no financeiro");return x}
 async function loadFinance(){if(!token)return;try{[invoices,expenses]=await Promise.all([finReq("invoices"),finReq("expenses")]);renderFinance()}catch(e){}}
