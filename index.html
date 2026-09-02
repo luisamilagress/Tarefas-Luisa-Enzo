@@ -71,6 +71,11 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 .mlMetrics{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-top:12px}.mlMetric{background:#f6f7f9;border-radius:10px;padding:9px}.mlMetric span{display:block;font-size:10px;color:#777}.mlMetric b{font-size:13px}
 .mlAlerts{margin-top:12px}.mlAlert{padding:8px 10px;border-radius:9px;background:#f7f8fa;margin:6px 0;font-size:12px}.mlQualityActions{margin-top:9px;border-top:1px solid #eee;padding-top:8px}.mlQualityActions b{font-size:12px}.mlQualityActions div{font-size:11px;color:#666;margin-top:4px}
 @media(max-width:800px){.mlMetrics{grid-template-columns:repeat(3,1fr)}.mlDiagTop{grid-template-columns:58px 1fr}.mlDiagTop img{width:58px;height:58px}.mlGrade{grid-column:1/-1;width:max-content}}
+
+.mlPromoBadge{display:inline-block;font-size:10px;font-weight:900;padding:5px 8px;border-radius:999px;margin-top:6px}
+.mlPromoOn{background:#e7f6eb;color:#246d3b}.mlPromoOff{background:#fff0f0;color:#9a2727}.mlPromoCandidate{background:#fff3cf;color:#785a00}
+.mlRecommendation{padding:8px 10px;border-radius:9px;background:#eef4ff;margin:6px 0;font-size:12px}
+.mlSectionMini{margin-top:11px;border-top:1px solid #eee;padding-top:9px}.mlSectionMini b{font-size:12px}
 </style>
 </head>
 <body class="loginbg">
@@ -279,7 +284,7 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
       <div class="mlChecklist">
         <div>✓ Conversão baixa</div><div>✓ Anúncios sem promoção</div><div>✓ Preços e sugestões</div><div>✓ Concorrência / catálogo</div><div>✓ Vendas e anúncios parados</div><div>✓ O que olhar primeiro</div>
       </div>
-      <p class="muted">A conexão já fica pronta nesta versão. A próxima etapa é montar os diagnósticos automáticos usando os dados reais da conta.</p>
+      <p class="muted">A conexão já fica pronta nesta versão. Agora o painel cruza dados reais da conta, promoções e competição de catálogo para priorizar o que precisa da sua atenção.</p>
     </div>
   </div>
 </div></div><div id="workHub" class="workHub">
@@ -410,10 +415,13 @@ function setMLFilter(f,b){mlFilter=f;document.querySelectorAll(".mlFilters butto
 function gradeLabel(g){return g==="urgent"?"🔴 URGENTE":g==="improve"?"🟡 MELHORAR":"🟢 SAUDÁVEL"}
 function gradeClass(g){return g==="urgent"?"gUrgent":g==="improve"?"gImprove":"gHealthy"}
 function fmtPct(v){return v==null?"—":Number(v).toFixed(2)+"%"}
+function promoLabel(p){if(p?.has_active)return '<span class="mlPromoBadge mlPromoOn">✓ Promoção ativa</span>';if(p?.has_candidate)return '<span class="mlPromoBadge mlPromoCandidate">★ Oportunidade de promoção</span>';return '<span class="mlPromoBadge mlPromoOff">Sem promoção ativa</span>'}
+function catalogText(c){if(!c)return "Não está em competição de catálogo";const m={winning:"Ganhando catálogo",competing:"Perdendo catálogo",sharing_first_place:"Compartilhando 1º lugar",listed:"Listado no catálogo",not_listed:"Fora da competição"};return m[c.status]||c.status||"—"}
 function renderMLItems(){if(!$("mlItemsList"))return;const items=mlItems.filter(x=>mlFilter==="all"||x.grade===mlFilter);$("mlItemsList").innerHTML=items.length?items.map(it=>`<div class="mlDiag">
-<div class="mlDiagTop"><img src="${esc(it.thumbnail||"")}" alt=""><div><div class="mlItemTitle">${esc(it.title)}</div><div class="mlItemMeta">${esc(it.id)} · ${esc(it.status||"")} · ${it.age_days==null?"idade desconhecida":it.age_days+" dia(s) ativo"}</div>${it.permalink?`<div class="mlOpen"><a href="${it.permalink}" target="_blank" class="linkBtn">Abrir anúncio ↗</a></div>`:""}</div><span class="mlGrade ${gradeClass(it.grade)}">${gradeLabel(it.grade)}</span></div>
-<div class="mlMetrics"><div class="mlMetric"><span>Preço</span><b>${Number(it.price||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</b></div><div class="mlMetric"><span>Estoque</span><b>${it.available_quantity??0}</b></div><div class="mlMetric"><span>Visitas 30d</span><b>${it.visits_30d??0}</b></div><div class="mlMetric"><span>Vendidos</span><b>${it.sold_quantity??0}</b></div><div class="mlMetric"><span>Conversão est.</span><b>${fmtPct(it.conversion_estimate)}</b></div><div class="mlMetric"><span>Qualidade ML</span><b>${it.quality_score==null?"—":it.quality_score+"/100"}</b></div></div>
+<div class="mlDiagTop"><img src="${esc(it.thumbnail||"")}" alt=""><div><div class="mlItemTitle">${esc(it.title)}</div><div class="mlItemMeta">${esc(it.id)} · <strong>SKU: ${esc(it.sku||"Sem SKU")}</strong> · ${esc(it.status||"")} · ${it.age_days==null?"idade desconhecida":it.age_days+" dia(s) ativo"}</div>${promoLabel(it.promotion)}${it.permalink?`<div class="mlOpen"><a href="${it.permalink}" target="_blank" class="linkBtn">Abrir anúncio ↗</a></div>`:""}</div><span class="mlGrade ${gradeClass(it.grade)}">${gradeLabel(it.grade)}</span></div>
+<div class="mlMetrics"><div class="mlMetric"><span>Preço</span><b>${Number(it.price||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</b></div><div class="mlMetric"><span>Estoque</span><b>${it.available_quantity??0}</b></div><div class="mlMetric"><span>Visitas 30d</span><b>${it.visits_30d??0}</b></div><div class="mlMetric"><span>Vendidos</span><b>${it.sold_quantity??0}</b></div><div class="mlMetric"><span>Conversão est.</span><b>${fmtPct(it.conversion_estimate)}</b></div><div class="mlMetric"><span>Catálogo</span><b>${esc(catalogText(it.catalog_competition))}</b></div></div>
 <div class="mlAlerts">${(it.alerts||[]).map(a=>`<div class="mlAlert">${esc(a)}</div>`).join("")}</div>
+${it.recommendations?.length?`<div class="mlSectionMini"><b>💡 O que fazer</b>${it.recommendations.map(a=>`<div class="mlRecommendation">${esc(a)}</div>`).join("")}</div>`:""}
 ${it.quality_actions?.length?`<div class="mlQualityActions"><b>O próprio Mercado Livre recomenda:</b>${it.quality_actions.map(a=>`<div>• ${esc(a)}</div>`).join("")}</div>`:""}
 </div>`).join(""):'<div class="empty">Nenhum anúncio nessa classificação.</div>'}
 async function orgReq(path,opt={}){opt.headers={...(opt.headers||{}),"Content-Type":"application/json","Authorization":"Bearer "+token};const r=await fetch(ORG_API+path,opt),x=await r.json();if(!r.ok)throw Error(x.error||"Erro");return x}
