@@ -175,7 +175,7 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
     <section class="col"><h2>🔴 PENDENTES</h2><div id="p"></div></section>
     <section class="col"><h2>🟡 EM ANDAMENTO</h2><div id="d"></div></section>
     <section class="col"><h2>⏸ AGUARDANDO ALGUÉM</h2><div id="w"></div></section>
-    <section class="col"><h2>🟢 CONCLUÍDAS</h2><div id="c"></div></section>
+    <section class="col"><h2>🟢 CONCLUÍDAS HOJE</h2><div class="muted" style="margin:0 4px 8px">Somem da tela quando virar o dia.</div><div id="c"></div></section>
   </div>
 </main>
 </div>
@@ -357,14 +357,14 @@ function openWorkHub(view){$("workHub").classList.add("show");if(view)setWorkVie
 function closeWorkHub(){$("workHub").classList.remove("show")}
 function setWorkView(v,btn){workView=v;document.querySelectorAll(".workSection").forEach(x=>x.style.display="none");const map={tasks:"workTasks",problems:"workProblems",ads:"workAds",clients:"workClients",notes:"workNotes",recurring:"workRecurring"};$(map[v]).style.display="block";document.querySelectorAll("[data-work]").forEach(x=>x.className="soft");const b=btn||document.querySelector(`[data-work="${v}"]`);if(b)b.className="primary";renderWorkHub()}
 function renderWorkHub(){renderWorkSummary();renderProblems();renderAds();renderClientDashboard();renderQuickNotes();renderRecurring()}
-function visibleTasksBase(){return tasks.filter(t=>!viewPerson||t.assignee===viewPerson)}
+function visibleTasksBase(){return tasks.filter(t=>visibleByCompletionDay(t)&&(!viewPerson||t.assignee===viewPerson))}
 function renderWorkSummary(){if(!$("workTaskSummary"))return;const a=visibleTasksBase();$("workTaskSummary").innerHTML=`<div class="hubMetric"><span class="muted">Pendentes</span><b>${a.filter(x=>x.status==="pending").length}</b></div><div class="hubMetric"><span class="muted">Em andamento</span><b>${a.filter(x=>x.status==="doing").length}</b></div><div class="hubMetric"><span class="muted">Aguardando</span><b>${a.filter(x=>x.status==="waiting").length}</b></div><div class="hubMetric"><span class="muted">Problemas</span><b>${a.filter(x=>x.task_type==="problem"&&x.status!=="done").length}</b></div>`}
 function renderProblems(){if(!$("problemList"))return;const a=visibleTasksBase().filter(x=>x.task_type==="problem"&&x.status!=="done");$("problemList").innerHTML=a.length?a.map(t=>`<div class="problemRow"><div><b>${esc(t.title)}</b><div class="finSmall">${esc(t.client||"Sem cliente")}</div></div><span class="typeTag problemTag">🚨 ${esc(t.problem_category||"Problema")}</span><span>${priorityText(t)}</span><button class="soft" onclick="openEdit('${t.id}')">Abrir</button></div>`).join(""):'<div class="empty">Nenhum problema aberto.</div>'}
 const adStages=["photo","description","register","published"];function adStageLabel(s){return {photo:"Falta foto",description:"Falta descrição",register:"Cadastrar",published:"Publicado"}[s]||"Falta foto"}
 function renderAds(){if(!$("adPhoto"))return;const a=visibleTasksBase().filter(x=>x.task_type==="ad");const ids={photo:"adPhoto",description:"adDescription",register:"adRegister",published:"adPublished"};Object.values(ids).forEach(id=>$(id).innerHTML="");for(const st of adStages){const list=a.filter(x=>(x.ad_stage||"photo")===st);$(ids[st]).innerHTML=list.length?list.map(t=>`<div class="adMini"><div class="adMiniTitle">${esc(t.title)}</div><div class="finSmall">${esc(t.client||"Sem cliente")} · ${priorityText(t)}</div><div class="cardactions">${st!=="published"?`<button class="soft" onclick="advanceAd('${t.id}','${st}')">Próxima →</button>`:""}<button class="soft" onclick="openEdit('${t.id}')">Editar</button></div></div>`).join(""):'<div class="muted" style="padding:12px 0">Vazio</div>'}}
 async function advanceAd(id,stage){const i=adStages.indexOf(stage),next=adStages[Math.min(i+1,adStages.length-1)];try{await req("/tasks/"+id,{method:"PATCH",body:JSON.stringify({ad_stage:next,status:next==="published"?"done":"pending"})});load()}catch(e){alert(e.message)}}
 function renderClientDashboard(){if(!$("clientDashboard"))return;const owner=viewPerson||me,cs=clients.filter(c=>c.owner===owner);$("clientDashboard").innerHTML=cs.length?cs.map(c=>{const a=tasks.filter(t=>t.client===c.name&&t.status!=="done"&&(!viewPerson||t.assignee===viewPerson));return `<div class="clientDashCard" onclick="showClientDetail('${esc(c.name).replace(/'/g,"&#39;")}')"><b>🏢 ${esc(c.name)}</b><div class="count">${a.length}</div><div class="muted">pendência(s)</div></div>`}).join(""):'<div class="empty" style="grid-column:1/-1">Nenhum cliente cadastrado.</div>'}
-function showClientDetail(name){const a=tasks.filter(t=>t.client===name&&(!viewPerson||t.assignee===viewPerson));$("clientDetail").innerHTML=`<div class="clientDetailBox"><div class="sectionTitle"><div><h2>🏢 ${esc(name)}</h2><div class="muted">${a.filter(x=>x.status!=="done").length} pendência(s) aberta(s)</div></div><button class="primary" onclick="newTaskForClient('${esc(name).replace(/'/g,"&#39;")}')">+ Tarefa para este cliente</button></div>${a.length?a.map(t=>`<div class="clientTaskRow"><b>${esc(t.title)}</b> · ${priorityText(t)} · ${statusText(t.status)}</div>`).join(""):'<div class="empty">Nenhuma tarefa para este cliente.</div>'}</div>`}
+function showClientDetail(name){const a=tasks.filter(t=>visibleByCompletionDay(t)&&t.client===name&&(!viewPerson||t.assignee===viewPerson));$("clientDetail").innerHTML=`<div class="clientDetailBox"><div class="sectionTitle"><div><h2>🏢 ${esc(name)}</h2><div class="muted">${a.filter(x=>x.status!=="done").length} pendência(s) aberta(s)</div></div><button class="primary" onclick="newTaskForClient('${esc(name).replace(/'/g,"&#39;")}')">+ Tarefa para este cliente</button></div>${a.length?a.map(t=>`<div class="clientTaskRow"><b>${esc(t.title)}</b> · ${priorityText(t)} · ${statusText(t.status)}</div>`).join(""):'<div class="empty">Nenhuma tarefa para este cliente.</div>'}</div>`}
 function statusText(s){return {pending:"Pendente",doing:"Em andamento",waiting:"Aguardando alguém",done:"Concluída"}[s]||s}
 function newTaskForClient(name){closeWorkHub();openModal();$("client").value=name}
 function newTypedTask(type){closeWorkHub();openModal();$("taskType").value=type;toggleTaskTypeFields()}
@@ -464,6 +464,16 @@ function showNotifications(){ $("dot").style.display="none"; alert("Os avisos ap
 function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 function overdue(t){return t.due_date && t.status!=="done" && new Date(t.due_date+"T23:59:59")<new Date()}
 function dateOnly(d){return d?String(d).slice(0,10):""}
+function completedToday(t){
+ if(t.status!=="done")return true;
+ const d=t.updated_at||t.created_at;
+ if(!d)return false;
+ try{
+  const x=new Date(d),n=new Date();
+  return x.getFullYear()===n.getFullYear()&&x.getMonth()===n.getMonth()&&x.getDate()===n.getDate();
+ }catch(e){return false}
+}
+function visibleByCompletionDay(t){return t.status!=="done"||completedToday(t)}
 function todayISO(){return new Date().toISOString().slice(0,10)}
 function isToday(t){return dateOnly(t.due_date)===todayISO()}
 function createdLabel(v){if(!v)return "";try{return new Date(v).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})}catch(e){return ""}}
@@ -511,7 +521,7 @@ function render(){renderDaily();
  const shown=viewPerson||"Luisa + Enzo";
  $("subtitle").textContent=viewPerson?"Você está vendo o painel de "+shown+".":"Você está vendo todas as tarefas de Luisa e Enzo.";
  let q=$("search").value.toLowerCase(),f=$("filter").value,cf=$("clientFilter").value,s=$("sort").value;
- let a=tasks.filter(t=>(f==="all"||t.assignee===f)&&(cf==="all"||(t.client||"")===cf)&&((t.title||"").toLowerCase().includes(q)||(t.description||"").toLowerCase().includes(q)||(t.client||"").toLowerCase().includes(q)));
+ let a=tasks.filter(t=>visibleByCompletionDay(t)&&(f==="all"||t.assignee===f)&&(cf==="all"||(t.client||"")===cf)&&((t.title||"").toLowerCase().includes(q)||(t.description||"").toLowerCase().includes(q)||(t.client||"").toLowerCase().includes(q)));
  if(smartFilter==="today")a=a.filter(isToday);
  if(smartFilter==="late")a=a.filter(overdue);
  if(smartFilter==="high")a=a.filter(t=>t.priority==="high");
@@ -528,7 +538,7 @@ function render(){renderDaily();
  $("mineDoing").textContent=tasks.filter(x=>x.assignee===me&&x.status==="doing").length;
  $("otherPending").textContent=tasks.filter(x=>x.assignee===other&&x.status==="pending").length;
  $("otherDoing").textContent=tasks.filter(x=>x.assignee===other&&x.status==="doing").length;
- const visibleBase=tasks.filter(t=>!viewPerson||t.assignee===viewPerson); const total=visibleBase.length,doneN=visibleBase.filter(x=>x.status==="done").length,pct=total?Math.round(doneN/total*100):0;
+ const visibleBase=tasks.filter(t=>visibleByCompletionDay(t)&&(!viewPerson||t.assignee===viewPerson)); const total=visibleBase.length,doneN=visibleBase.filter(x=>x.status==="done").length,pct=total?Math.round(doneN/total*100):0;
  $("progressPct").textContent=pct+"%";$("progressFill").style.width=pct+"%";
  const todays=visibleBase.filter(t=>isToday(t)&&t.status!=="done").slice(0,4);
  $("todayCount").textContent=visibleBase.filter(t=>isToday(t)&&t.status!=="done").length;
