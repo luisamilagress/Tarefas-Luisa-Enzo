@@ -63,6 +63,14 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 .mlItemTitle{font-weight:900;font-size:14px}.mlItemMeta{font-size:12px;color:#71767d;margin-top:5px}
 .mlItemNums{text-align:right}.mlItemNums b{display:block;font-size:16px}.mlOpen{margin-top:7px}
 @media(max-width:650px){.mlItem{grid-template-columns:58px 1fr}.mlItem img{width:58px;height:58px}.mlItemNums{grid-column:1/-1;text-align:left;display:flex;gap:15px;flex-wrap:wrap}}
+
+.mlFilters{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0 14px}.mlFilters button.active{background:#17181a;color:#fff}
+.mlDiag{border:1px solid #e2e5e8;border-radius:16px;padding:14px;margin:10px 0;background:#fff}
+.mlDiagTop{display:grid;grid-template-columns:70px 1fr auto;gap:12px;align-items:center}.mlDiagTop img{width:70px;height:70px;object-fit:contain;border-radius:10px;background:#f7f8fa}
+.mlGrade{font-size:11px;font-weight:950;padding:6px 9px;border-radius:999px;white-space:nowrap}.gUrgent{background:#ffe8e8;color:#a21e1e}.gImprove{background:#fff3cf;color:#785a00}.gHealthy{background:#e7f6eb;color:#246d3b}
+.mlMetrics{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-top:12px}.mlMetric{background:#f6f7f9;border-radius:10px;padding:9px}.mlMetric span{display:block;font-size:10px;color:#777}.mlMetric b{font-size:13px}
+.mlAlerts{margin-top:12px}.mlAlert{padding:8px 10px;border-radius:9px;background:#f7f8fa;margin:6px 0;font-size:12px}.mlQualityActions{margin-top:9px;border-top:1px solid #eee;padding-top:8px}.mlQualityActions b{font-size:12px}.mlQualityActions div{font-size:11px;color:#666;margin-top:4px}
+@media(max-width:800px){.mlMetrics{grid-template-columns:repeat(3,1fr)}.mlDiagTop{grid-template-columns:58px 1fr}.mlDiagTop img{width:58px;height:58px}.mlGrade{grid-column:1/-1;width:max-content}}
 </style>
 </head>
 <body class="loginbg">
@@ -257,12 +265,13 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
     </div>
     <div class="mlStats">
       <div class="mlStat"><span>Anúncios ativos</span><b id="mlActiveItems">—</b></div>
-      <div class="mlStat"><span>Urgentes</span><b>Em breve</b></div>
-      <div class="mlStat"><span>Para melhorar</span><b>Em breve</b></div>
-      <div class="mlStat"><span>Saudáveis</span><b>Em breve</b></div>
+      <div class="mlStat"><span>Urgentes</span><b id="mlUrgent">0</b></div>
+      <div class="mlStat"><span>Para melhorar</span><b id="mlImprove">0</b></div>
+      <div class="mlStat"><span>Saudáveis</span><b id="mlHealthy">0</b></div>
     </div>
     <div class="mlItemsBox">
-      <div class="sectionTitle"><div><h3>Seus anúncios ativos</h3><div class="muted">Dados puxados diretamente do Mercado Livre.</div></div><button class="soft" onclick="loadMLStatus()">Atualizar</button></div>
+      <div class="sectionTitle"><div><h3>Diagnóstico dos anúncios</h3><div class="muted">O sistema analisa os dados disponíveis e explica o que merece atenção.</div></div><button class="soft" onclick="loadMLStatus()">Atualizar</button></div>
+<div class="mlFilters"><button class="soft active" onclick="setMLFilter('all',this)">Todos</button><button class="soft" onclick="setMLFilter('urgent',this)">🔴 Urgentes</button><button class="soft" onclick="setMLFilter('improve',this)">🟡 Melhorar</button><button class="soft" onclick="setMLFilter('healthy',this)">🟢 Saudáveis</button></div>
       <div id="mlItemsList"></div>
     </div>
     <div class="mlInfo">
@@ -392,11 +401,21 @@ function renderClientManager(){if(!$("clientManagerList"))return;const o=$("clie
 
 const ML_OAUTH="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/mercadolivre-oauth";
 const ML_DASH="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/mercadolivre-dashboard";
+let mlItems=[],mlFilter="all";
 function openMLPanel(){$("mlPanel").classList.add("show");loadMLStatus()}
 function closeMLPanel(){$("mlPanel").classList.remove("show")}
 function connectMercadoLivre(){location.href=ML_OAUTH+"?mode=start"}
-async function loadMLStatus(){if(!token)return;try{const r=await fetch(ML_DASH,{headers:{"Authorization":"Bearer "+token}}),x=await r.json();if(x.connected){$("mlDisconnected").style.display="none";$("mlConnected").style.display="block";$("mlNickname").textContent=x.nickname||"Mercado Livre";$("mlActiveItems").textContent=x.active_items??"—";renderMLItems(x.items||[])}else{$("mlDisconnected").style.display="block";$("mlConnected").style.display="none"}}catch(e){$("mlDisconnected").style.display="block";$("mlConnected").style.display="none"}}
-function renderMLItems(items){if(!$("mlItemsList"))return;$("mlItemsList").innerHTML=items.length?items.map(it=>`<div class="mlItem"><img src="${esc(it.thumbnail||"")}" alt=""><div><div class="mlItemTitle">${esc(it.title)}</div><div class="mlItemMeta">${esc(it.id)} · ${esc(it.status||"")} · Estoque: ${it.available_quantity??0}</div><div class="mlOpen">${it.permalink?`<a href="${it.permalink}" target="_blank" class="linkBtn">Abrir anúncio ↗</a>`:""}</div></div><div class="mlItemNums"><b>${Number(it.price||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</b><span class="muted">Vendidos: ${it.sold_quantity??0}</span></div></div>`).join(""):'<div class="empty">Nenhum anúncio ativo encontrado.</div>'}
+async function loadMLStatus(){if(!token)return;try{const r=await fetch(ML_DASH,{headers:{"Authorization":"Bearer "+token}}),x=await r.json();if(x.connected){$("mlDisconnected").style.display="none";$("mlConnected").style.display="block";$("mlNickname").textContent=x.nickname||"Mercado Livre";$("mlActiveItems").textContent=x.active_items??"—";$("mlUrgent").textContent=x.counts?.urgent??0;$("mlImprove").textContent=x.counts?.improve??0;$("mlHealthy").textContent=x.counts?.healthy??0;mlItems=x.items||[];renderMLItems()}else{$("mlDisconnected").style.display="block";$("mlConnected").style.display="none"}}catch(e){$("mlDisconnected").style.display="block";$("mlConnected").style.display="none"}}
+function setMLFilter(f,b){mlFilter=f;document.querySelectorAll(".mlFilters button").forEach(x=>x.classList.remove("active"));if(b)b.classList.add("active");renderMLItems()}
+function gradeLabel(g){return g==="urgent"?"🔴 URGENTE":g==="improve"?"🟡 MELHORAR":"🟢 SAUDÁVEL"}
+function gradeClass(g){return g==="urgent"?"gUrgent":g==="improve"?"gImprove":"gHealthy"}
+function fmtPct(v){return v==null?"—":Number(v).toFixed(2)+"%"}
+function renderMLItems(){if(!$("mlItemsList"))return;const items=mlItems.filter(x=>mlFilter==="all"||x.grade===mlFilter);$("mlItemsList").innerHTML=items.length?items.map(it=>`<div class="mlDiag">
+<div class="mlDiagTop"><img src="${esc(it.thumbnail||"")}" alt=""><div><div class="mlItemTitle">${esc(it.title)}</div><div class="mlItemMeta">${esc(it.id)} · ${esc(it.status||"")} · ${it.age_days==null?"idade desconhecida":it.age_days+" dia(s) ativo"}</div>${it.permalink?`<div class="mlOpen"><a href="${it.permalink}" target="_blank" class="linkBtn">Abrir anúncio ↗</a></div>`:""}</div><span class="mlGrade ${gradeClass(it.grade)}">${gradeLabel(it.grade)}</span></div>
+<div class="mlMetrics"><div class="mlMetric"><span>Preço</span><b>${Number(it.price||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</b></div><div class="mlMetric"><span>Estoque</span><b>${it.available_quantity??0}</b></div><div class="mlMetric"><span>Visitas 30d</span><b>${it.visits_30d??0}</b></div><div class="mlMetric"><span>Vendidos</span><b>${it.sold_quantity??0}</b></div><div class="mlMetric"><span>Conversão est.</span><b>${fmtPct(it.conversion_estimate)}</b></div><div class="mlMetric"><span>Qualidade ML</span><b>${it.quality_score==null?"—":it.quality_score+"/100"}</b></div></div>
+<div class="mlAlerts">${(it.alerts||[]).map(a=>`<div class="mlAlert">${esc(a)}</div>`).join("")}</div>
+${it.quality_actions?.length?`<div class="mlQualityActions"><b>O próprio Mercado Livre recomenda:</b>${it.quality_actions.map(a=>`<div>• ${esc(a)}</div>`).join("")}</div>`:""}
+</div>`).join(""):'<div class="empty">Nenhum anúncio nessa classificação.</div>'}
 async function orgReq(path,opt={}){opt.headers={...(opt.headers||{}),"Content-Type":"application/json","Authorization":"Bearer "+token};const r=await fetch(ORG_API+path,opt),x=await r.json();if(!r.ok)throw Error(x.error||"Erro");return x}
 async function loadOrganizer(){if(!token)return;try{[quickNotes,recurringTemplates]=await Promise.all([orgReq("/notes"),orgReq("/recurring")]);renderQuickNotes();renderRecurring()}catch(e){}}
 function openWorkHub(view){$("workHub").classList.add("show");if(view)setWorkView(view);renderWorkHub();loadOrganizer()}
