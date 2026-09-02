@@ -76,6 +76,8 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 .mlPromoOn{background:#e7f6eb;color:#246d3b}.mlPromoOff{background:#fff0f0;color:#9a2727}.mlPromoCandidate{background:#fff3cf;color:#785a00}
 .mlRecommendation{padding:8px 10px;border-radius:9px;background:#eef4ff;margin:6px 0;font-size:12px}
 .mlSectionMini{margin-top:11px;border-top:1px solid #eee;padding-top:9px}.mlSectionMini b{font-size:12px}
+
+.mlFinance{margin-top:12px;border:1px solid #dfe3e8;border-radius:12px;padding:11px;background:#fbfcfd}.mlFinanceGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.mlFinBox{background:#fff;border-radius:9px;padding:9px;border:1px solid #eceef1}.mlFinBox span{display:block;font-size:10px;color:#777}.mlFinBox b{font-size:14px}.mlCostEdit{display:flex;gap:6px;align-items:end}.mlCostEdit input{margin:0;min-width:0}.mlCostEdit button{white-space:nowrap}.mlMarginPill{display:inline-block;padding:4px 7px;border-radius:999px;font-size:11px;font-weight:900}@media(max-width:850px){.mlFinanceGrid{grid-template-columns:1fr 1fr}.mlCostEdit{grid-column:1/-1}}
 </style>
 </head>
 <body class="loginbg">
@@ -279,7 +281,7 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 <div class="mlFilters"><button class="soft active" onclick="setMLFilter('all',this)">Todos</button><button class="soft" onclick="setMLFilter('urgent',this)">🔴 Urgentes</button><button class="soft" onclick="setMLFilter('improve',this)">🟡 Melhorar</button><button class="soft" onclick="setMLFilter('healthy',this)">🟢 Saudáveis</button></div>
       <div id="mlItemsList"></div>
     </div>
-    <div class="mlInfo">
+    <div class="mlInfo"><div class="muted" style="margin-bottom:10px">Preço de atacado consultado diretamente na tabela de preços por quantidade do Mercado Livre.</div>
       <h3>O que essa área vai analisar</h3>
       <div class="mlChecklist">
         <div>✓ Conversão baixa</div><div>✓ Anúncios sem promoção</div><div>✓ Preços e sugestões</div><div>✓ Concorrência / catálogo</div><div>✓ Vendas e anúncios parados</div><div>✓ O que olhar primeiro</div>
@@ -406,11 +408,20 @@ function renderClientManager(){if(!$("clientManagerList"))return;const o=$("clie
 
 const ML_OAUTH="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/mercadolivre-oauth";
 const ML_DASH="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/mercadolivre-dashboard";
+const ML_WHOLESALE="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/mercadolivre-wholesale";
+const ML_COSTS="https://wjtgijnkksxgvsyohypk.supabase.co/functions/v1/mercadolivre-costs";
+let mlCosts={};
 let mlItems=[],mlFilter="all";
 function openMLPanel(){$("mlPanel").classList.add("show");loadMLStatus()}
 function closeMLPanel(){$("mlPanel").classList.remove("show")}
 function connectMercadoLivre(){location.href=ML_OAUTH+"?mode=start"}
-async function loadMLStatus(){if(!token)return;try{const r=await fetch(ML_DASH,{headers:{"Authorization":"Bearer "+token}}),x=await r.json();if(x.connected){$("mlDisconnected").style.display="none";$("mlConnected").style.display="block";$("mlNickname").textContent=x.nickname||"Mercado Livre";$("mlActiveItems").textContent=x.active_items??"—";$("mlUrgent").textContent=x.counts?.urgent??0;$("mlImprove").textContent=x.counts?.improve??0;$("mlHealthy").textContent=x.counts?.healthy??0;mlItems=x.items||[];renderMLItems()}else{$("mlDisconnected").style.display="block";$("mlConnected").style.display="none"}}catch(e){$("mlDisconnected").style.display="block";$("mlConnected").style.display="none"}}
+async function loadMLStatus(){if(!token)return;try{const r=await fetch(ML_DASH,{headers:{"Authorization":"Bearer "+token}}),x=await r.json();if(x.connected){$("mlDisconnected").style.display="none";$("mlConnected").style.display="block";$("mlNickname").textContent=x.nickname||"Mercado Livre";$("mlActiveItems").textContent=x.active_items??"—";$("mlUrgent").textContent=x.counts?.urgent??0;$("mlImprove").textContent=x.counts?.improve??0;$("mlHealthy").textContent=x.counts?.healthy??0;mlItems=x.items||[];await Promise.all([loadWholesaleForItems(),loadMLCosts()]);mergeMLCosts();renderMLItems()}else{$("mlDisconnected").style.display="block";$("mlConnected").style.display="none"}}catch(e){$("mlDisconnected").style.display="block";$("mlConnected").style.display="none"}}
+async function loadMLCosts(){try{const r=await fetch(ML_COSTS,{headers:{"Authorization":"Bearer "+token}}),a=await r.json();mlCosts={};if(r.ok&&Array.isArray(a))a.forEach(x=>mlCosts[String(x.sku)]=Number(x.cost||0))}catch(e){mlCosts={}}}
+function mergeMLCosts(){mlItems.forEach(it=>{it.product_cost=it.sku&&mlCosts[it.sku]!=null?Number(mlCosts[it.sku]):null;const fee=Number(it.fee?.amount||0),price=Number(it.price||0),cost=Number(it.product_cost||0);it.net_estimate=it.product_cost==null?null:price-fee-cost;it.margin_estimate=it.product_cost==null||price<=0?null:(it.net_estimate/price)*100})}
+async function saveMLCost(sku){if(!sku)return alert("Este anúncio está sem SKU. Cadastre um SKU no Mercado Livre primeiro.");const input=document.getElementById("cost_"+CSS.escape(sku));const cost=Number(input?.value);if(!Number.isFinite(cost)||cost<0)return alert("Digite um custo válido.");try{const r=await fetch(ML_COSTS,{method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({sku,cost})}),x=await r.json();if(!r.ok)throw Error(x.error||"Erro ao salvar custo");mlCosts[sku]=cost;mergeMLCosts();renderMLItems()}catch(e){alert(e.message)}}
+function fmtMoney(v){return v==null?"—":Number(v).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+function marginClass(v){if(v==null)return "";if(v<8)return "gUrgent";if(v<15)return "gImprove";return "gHealthy"}
+async function loadWholesaleForItems(){await Promise.all(mlItems.map(async it=>{try{const r=await fetch(ML_WHOLESALE+"?item_id="+encodeURIComponent(it.id),{headers:{"Authorization":"Bearer "+token}}),x=await r.json();it.wholesale=r.ok?x:{active:false,tiers:[]}}catch(e){it.wholesale={active:false,tiers:[]}}}))}
 function setMLFilter(f,b){mlFilter=f;document.querySelectorAll(".mlFilters button").forEach(x=>x.classList.remove("active"));if(b)b.classList.add("active");renderMLItems()}
 function gradeLabel(g){return g==="urgent"?"🔴 URGENTE":g==="improve"?"🟡 MELHORAR":"🟢 SAUDÁVEL"}
 function gradeClass(g){return g==="urgent"?"gUrgent":g==="improve"?"gImprove":"gHealthy"}
@@ -420,7 +431,14 @@ function wholesaleLabel(w){if(w?.active){const t=(w.tiers||[])[0];return `<span 
 function catalogText(c){if(!c)return "Não está em competição de catálogo";const m={winning:"Ganhando catálogo",competing:"Perdendo catálogo",sharing_first_place:"Compartilhando 1º lugar",listed:"Listado no catálogo",not_listed:"Fora da competição"};return m[c.status]||c.status||"—"}
 function renderMLItems(){if(!$("mlItemsList"))return;const items=mlItems.filter(x=>mlFilter==="all"||x.grade===mlFilter);$("mlItemsList").innerHTML=items.length?items.map(it=>`<div class="mlDiag">
 <div class="mlDiagTop"><img src="${esc(it.thumbnail||"")}" alt=""><div><div class="mlItemTitle">${esc(it.title)}</div><div class="mlItemMeta">${esc(it.id)} · <strong>SKU: ${esc(it.sku||"Sem SKU")}</strong> · ${esc(it.status||"")} · ${it.age_days==null?"idade desconhecida":it.age_days+" dia(s) ativo"}</div>${promoLabel(it.promotion)} ${wholesaleLabel(it.wholesale)}${it.permalink?`<div class="mlOpen"><a href="${it.permalink}" target="_blank" class="linkBtn">Abrir anúncio ↗</a></div>`:""}</div><span class="mlGrade ${gradeClass(it.grade)}">${gradeLabel(it.grade)}</span></div>
-<div class="mlMetrics"><div class="mlMetric"><span>Preço</span><b>${Number(it.price||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</b></div><div class="mlMetric"><span>Estoque</span><b>${it.available_quantity??0}</b></div><div class="mlMetric"><span>Visitas 30d</span><b>${it.visits_30d??0}</b></div><div class="mlMetric"><span>Vendidos</span><b>${it.sold_quantity??0}</b></div><div class="mlMetric"><span>Conversão est.</span><b>${fmtPct(it.conversion_estimate)}</b></div><div class="mlMetric"><span>Catálogo</span><b>${esc(catalogText(it.catalog_competition))}</b></div></div>
+<div class="mlMetrics"><div class="mlMetric"><span>Preço</span><b>${fmtMoney(it.price)}</b></div><div class="mlMetric"><span>Estoque</span><b>${it.available_quantity??0}</b></div><div class="mlMetric"><span>Visitas 30d</span><b>${it.visits_30d??0}</b></div><div class="mlMetric"><span>Vendidos</span><b>${it.sold_quantity??0}</b></div><div class="mlMetric"><span>Conversão est.</span><b>${fmtPct(it.conversion_estimate)}</b></div><div class="mlMetric"><span>Catálogo</span><b>${esc(catalogText(it.catalog_competition))}</b></div></div>
+<div class="mlFinance"><div class="mlFinanceGrid">
+<div class="mlFinBox"><span>Taxa ML estimada</span><b>${fmtMoney(it.fee?.amount)}</b><div class="finSmall">${it.fee?.percent!=null?Number(it.fee.percent).toFixed(1)+"%":""}</div></div>
+<div class="mlFinBox"><span>Custo do produto</span><b>${fmtMoney(it.product_cost)}</b></div>
+<div class="mlFinBox"><span>Sobra estimada</span><b>${fmtMoney(it.net_estimate)}</b></div>
+<div class="mlFinBox"><span>Margem estimada</span><b>${it.margin_estimate==null?"—":`<span class="mlMarginPill ${marginClass(it.margin_estimate)}">${it.margin_estimate.toFixed(1)}%</span>`}</b></div>
+<div class="mlCostEdit"><div style="flex:1"><span class="finSmall">Definir custo por SKU</span><input id="cost_${esc(it.sku||it.id)}" type="number" min="0" step="0.01" value="${it.product_cost??""}" placeholder="Ex.: 120,00"></div><button class="soft" onclick="saveMLCost('${esc(it.sku||"").replace(/'/g,"&#39;")}')">Salvar custo</button></div>
+</div><div class="finSmall" style="margin-top:7px">Sobra estimada = preço atual − taxa de venda do Mercado Livre − custo do produto. Frete, impostos e outros custos podem alterar o valor final.</div></div>
 ${it.wholesale?.active&&it.wholesale?.tiers?.length?`<div class="mlSectionMini"><b>Preço de atacado</b>${it.wholesale.tiers.map(t=>`<div class="mlRecommendation">A partir de ${t.min_quantity} un.: ${t.percentage!=null?t.percentage+"% de desconto":Number(t.amount||0).toLocaleString("pt-BR",{style:"currency",currency:t.currency_id||"BRL"})}</div>`).join("")}</div>`:""}
 <div class="mlAlerts">${(it.alerts||[]).map(a=>`<div class="mlAlert">${esc(a)}</div>`).join("")}</div>
 ${it.recommendations?.length?`<div class="mlSectionMini"><b>💡 O que fazer</b>${it.recommendations.map(a=>`<div class="mlRecommendation">${esc(a)}</div>`).join("")}</div>`:""}
