@@ -477,7 +477,29 @@ function connectMercadoLivre(){location.href=ML_OAUTH+"?mode=start"}
 async function loadMLStatus(){if(!token)return;mlMarketCache={};try{const r=await fetch(ML_DASH,{headers:{"Authorization":"Bearer "+token}}),x=await r.json();if(x.connected){$("mlDisconnected").style.display="none";$("mlConnected").style.display="block";$("mlNickname").textContent=x.nickname||"Mercado Livre";$("mlActiveItems").textContent=x.active_items??"—";$("mlUrgent").textContent=x.counts?.urgent??0;$("mlImprove").textContent=x.counts?.improve??0;$("mlHealthy").textContent=x.counts?.healthy??0;mlItems=x.items||[];await Promise.all([loadWholesaleForItems(),loadMLCosts()]);mergeMLCosts();renderMLItems()}else{$("mlDisconnected").style.display="block";$("mlConnected").style.display="none"}}catch(e){$("mlDisconnected").style.display="block";$("mlConnected").style.display="none"}}
 async function loadMLCosts(){try{const r=await fetch(ML_COSTS,{headers:{"Authorization":"Bearer "+token}}),a=await r.json();mlCosts={};if(r.ok&&Array.isArray(a))a.forEach(x=>mlCosts[String(x.sku)]=Number(x.cost||0))}catch(e){mlCosts={}}}
 function mergeMLCosts(){mlItems.forEach(it=>{it.product_cost=it.sku&&mlCosts[it.sku]!=null?Number(mlCosts[it.sku]):null;const fee=Number(it.fee?.amount||0),price=Number(it.price||0),cost=Number(it.product_cost||0);it.net_estimate=it.product_cost==null?null:price-fee-cost;it.margin_estimate=it.product_cost==null||price<=0?null:(it.net_estimate/price)*100})}
-async function saveMLCost(sku){if(!sku)return alert("Este anúncio está sem SKU. Cadastre um SKU no Mercado Livre primeiro.");const input=document.getElementById("cost_"+CSS.escape(sku));const cost=Number(input?.value);if(!Number.isFinite(cost)||cost<0)return alert("Digite um custo válido.");try{const r=await fetch(ML_COSTS,{method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({sku,cost})}),x=await r.json();if(!r.ok)throw Error(x.error||"Erro ao salvar custo");mlCosts[sku]=cost;mergeMLCosts();renderMLItems()}catch(e){alert(e.message)}}
+function parseBRMoney(v){
+  let s=String(v??"").trim().replace(/R\$\s?/gi,"").replace(/\s/g,"");
+  if(!s)return NaN;
+  if(s.includes(",")) s=s.replace(/\./g,"").replace(",",".");
+  const n=Number(s);
+  return Number.isFinite(n)?Math.round(n*100)/100:NaN;
+}
+async function saveMLCost(sku){
+  if(!sku)return alert("Este anúncio está sem SKU. Cadastre um SKU no Mercado Livre primeiro.");
+  const input=document.getElementById("cost_"+sku);
+  const cost=parseBRMoney(input?.value);
+  if(!Number.isFinite(cost)||cost<0)return alert("Digite um custo válido. Exemplo: 120,00");
+  if(cost>1000000)return alert("Esse custo parece muito alto. Confira o valor digitado.");
+  try{
+    const r=await fetch(ML_COSTS,{method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({sku,cost})});
+    const x=await r.json();
+    if(!r.ok)throw Error(x.error||"Erro ao salvar custo");
+    mlCosts[sku]=cost;
+    mergeMLCosts();
+    renderMLItems();
+    alert("Custo salvo: "+fmtMoney(cost));
+  }catch(e){alert(e.message)}
+}
 function fmtMoney(v){return v==null?"—":Number(v).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
 function marginClass(v){if(v==null)return "";if(v<8)return "gUrgent";if(v<15)return "gImprove";return "gHealthy"}
 async function loadWholesaleForItems(){await Promise.all(mlItems.map(async it=>{try{const r=await fetch(ML_WHOLESALE+"?item_id="+encodeURIComponent(it.id),{headers:{"Authorization":"Bearer "+token}}),x=await r.json();it.wholesale=r.ok?x:{active:false,tiers:[]}}catch(e){it.wholesale={active:false,tiers:[]}}}))}
@@ -576,7 +598,7 @@ function renderMLItems(){updateMLDoNow();if(!$("mlItemsList"))return;const items
 <div class="mlFinBox"><span>Custo do produto</span><b>${fmtMoney(it.product_cost)}</b></div>
 <div class="mlFinBox"><span>Sobra estimada</span><b>${fmtMoney(it.net_estimate)}</b></div>
 <div class="mlFinBox"><span>Margem estimada</span><b>${it.margin_estimate==null?"—":`<span class="mlMarginPill ${marginClass(it.margin_estimate)}">${it.margin_estimate.toFixed(1)}%</span>`}</b></div>
-<div class="mlCostEdit"><div style="flex:1"><span class="finSmall">Definir custo por SKU</span><input id="cost_${esc(it.sku||it.id)}" type="number" min="0" step="0.01" value="${it.product_cost??""}" placeholder="Ex.: 120,00"></div><button class="soft" onclick="saveMLCost('${esc(it.sku||"").replace(/'/g,"&#39;")}')">Salvar custo</button></div>
+<div class="mlCostEdit"><div style="flex:1"><span class="finSmall"><b>Definir custo por SKU</b> — pode usar vírgula ou ponto</span><input id="cost_${esc(it.sku||it.id)}" type="text" inputmode="decimal" value="${it.product_cost!=null?Number(it.product_cost).toFixed(2).replace(".",","):""}" placeholder="Ex.: 120,00"></div><button class="soft" onclick="saveMLCost('${esc(it.sku||"").replace(/'/g,"&#39;")}')">Salvar custo</button></div>
 </div><div class="finSmall" style="margin-top:7px">Sobra estimada = preço atual − taxa de venda do Mercado Livre − custo do produto. Frete, impostos e outros custos podem alterar o valor final.</div></div>
 ${it.wholesale?.active&&it.wholesale?.tiers?.length?`<div class="mlSectionMini"><b>Preço de atacado</b>${it.wholesale.tiers.map(t=>`<div class="mlRecommendation">A partir de ${t.min_quantity} un.: ${t.percentage!=null?t.percentage+"% de desconto":Number(t.amount||0).toLocaleString("pt-BR",{style:"currency",currency:t.currency_id||"BRL"})}</div>`).join("")}</div>`:""}
 <div class="mlAlerts">${(it.alerts||[]).map(a=>`<div class="mlAlert">${esc(a)}</div>`).join("")}</div>
