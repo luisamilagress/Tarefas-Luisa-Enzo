@@ -833,6 +833,7 @@ function render(){renderDaily();
  if(smartFilter==="high")a=a.filter(t=>t.priority==="high");
  if(s==="due")a.sort((x,y)=>(x.due_date||"9999").localeCompare(y.due_date||"9999"));
  if(s==="priority"){let w={high:0,medium:1,low:2};a.sort((x,y)=>w[x.priority]-w[y.priority])}
+ const visibleBase=tasks.filter(t=>visibleByCompletionDay(t)&&(!viewPerson||t.assignee===viewPerson));
  const p=a.filter(x=>x.status==="pending"),d=a.filter(x=>x.status==="doing"),w=a.filter(x=>x.status==="waiting"),c=a.filter(x=>x.status==="done");
  $("p").innerHTML=p.map(card).join("")||'<div class="empty">Nada por aqui.</div>';
  $("d").innerHTML=d.map(card).join("")||'<div class="empty">Nada por aqui.</div>';
@@ -844,7 +845,7 @@ function render(){renderDaily();
  $("mineDoing").textContent=tasks.filter(x=>x.assignee===me&&x.status==="doing").length;
  $("otherPending").textContent=tasks.filter(x=>x.assignee===other&&x.status==="pending").length;
  $("otherDoing").textContent=tasks.filter(x=>x.assignee===other&&x.status==="doing").length;
- const visibleBase=tasks.filter(t=>visibleByCompletionDay(t)&&(!viewPerson||t.assignee===viewPerson)); const total=visibleBase.length,doneN=visibleBase.filter(x=>x.status==="done").length,pct=total?Math.round(doneN/total*100):0;
+ const total=visibleBase.length,doneN=visibleBase.filter(x=>x.status==="done").length,pct=total?Math.round(doneN/total*100):0;
  $("progressPct").textContent=pct+"%";$("progressFill").style.width=pct+"%";
  const todays=visibleBase.filter(t=>isToday(t)&&t.status!=="done").slice(0,4);
  $("todayCount").textContent=visibleBase.filter(t=>isToday(t)&&t.status!=="done").length;
