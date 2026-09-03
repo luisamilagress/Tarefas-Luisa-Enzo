@@ -448,7 +448,11 @@ async function load(){
   previousIds=ids;firstLoad=false;tasks=fresh;
   await loadDaily();
   render();
- }catch(e){}
+ }catch(e){
+  console.error("Erro ao carregar tarefas:",e);
+  const msg=document.getElementById("subtitle");
+  if(msg)msg.textContent="Erro ao carregar tarefas. Atualize a página.";
+ }
 }
 
 async function clientReq(path="",opt={}){opt.headers={...(opt.headers||{}),"Content-Type":"application/json","Authorization":"Bearer "+token};const r=await fetch(CLIENT_API+path,opt),x=await r.json();if(!r.ok)throw Error(x.error||"Erro nos clientes");return x}
@@ -823,6 +827,23 @@ function syncQuickFilter(){
  else if(v===other)$("otherBtn").classList.add("active");
  else $("allBtn").classList.add("active");
 }
+
+function taskScore(t){
+ let s=0;
+ const today=todayISO();
+ if(t.due_date){
+   if(dateOnly(t.due_date)<today)s+=1000;
+   else if(dateOnly(t.due_date)===today)s+=700;
+   else{
+     const days=(new Date(t.due_date+"T12:00:00")-new Date(today+"T12:00:00"))/86400000;
+     s+=Math.max(0,250-days*20);
+   }
+ }
+ s+=t.priority==="high"?300:t.priority==="medium"?150:50;
+ if(t.status==="doing")s+=120;
+ if(t.task_type==="problem")s+=80;
+ return s;
+}
 function render(){renderDaily();
  const shown=viewPerson||"Luisa + Enzo";
  $("subtitle").textContent=viewPerson?"Você está vendo o painel de "+shown+".":"Você está vendo todas as tarefas de Luisa e Enzo.";
@@ -832,7 +853,7 @@ function render(){renderDaily();
  if(q) a=a.filter(t=>(String(t.title||"")+" "+String(t.description||"")+" "+String(t.client||"")).toLowerCase().includes(q));
  if(cf!=="all") a=a.filter(t=>t.client===cf);
  if(s==="date") a.sort((x,y)=>String(x.due_date||"9999").localeCompare(String(y.due_date||"9999")));
- else a.sort((x,y)=>score(y)-score(x));
+ else a.sort((x,y)=>taskScore(y)-taskScore(x));
  const visibleBase=tasks.filter(t=>visibleByCompletionDay(t)&&(!viewPerson||t.assignee===viewPerson));
  const p=a.filter(x=>x.status==="pending"),d=a.filter(x=>x.status==="doing"),w=a.filter(x=>x.status==="waiting"),c=a.filter(x=>x.status==="done");
  $("p").innerHTML=p.map(card).join("")||'<div class="empty">Nada por aqui.</div>';
