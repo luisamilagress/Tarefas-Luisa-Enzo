@@ -101,6 +101,20 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
 .mlMarketMini{font-size:11px;color:#555;margin-top:5px;display:flex;gap:10px;flex-wrap:wrap}.mlMarketMini b{color:#17181a}
 .mlSelectBtn{border:0;background:#eef0f3;border-radius:8px;padding:6px 8px;font-size:11px;font-weight:850;cursor:pointer;margin-top:6px}
 @media(max-width:980px){.mlSplit{grid-template-columns:1fr}.mlMarketSide{position:static}}
+
+/* V31 — Prioridade + recomendação automática */
+.mlPriorityPill{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:950;margin-right:5px}
+.pNow{background:#ffe8e8;color:#a21e1e}.pWatch{background:#fff3cf;color:#785a00}.pOk{background:#e7f6eb;color:#246d3b}
+.mlActionBox{margin-top:7px;padding:8px 10px;border-radius:10px;background:#f7f8fa;font-size:11px}
+.mlActionBox b{display:block;margin-bottom:2px}
+.mlQuickFilters{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 12px}
+.mlQuickFilters button{border:1px solid #ddd;background:#fff;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:850;cursor:pointer}
+.mlQuickFilters button.active{background:#17181a;color:#fff;border-color:#17181a}
+.mlOpsSummary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 12px}
+.mlOpsBox{background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:9px}
+.mlOpsBox span{display:block;font-size:10px;color:#777}.mlOpsBox b{font-size:16px}
+@media(max-width:800px){.mlOpsSummary{grid-template-columns:1fr 1fr}}
+
 </style>
 </head>
 <body class="loginbg">
@@ -302,6 +316,20 @@ label{display:block;font-size:13px;font-weight:700;margin-top:12px}input,textare
     <div class="mlItemsBox">
       <div class="sectionTitle"><div><h3>O que precisa da sua atenção</h3><div class="muted">Visão compacta. Clique em “Ver análise” somente quando quiser todos os detalhes.</div></div><button class="soft" onclick="loadMLStatus()">Atualizar</button></div>
 <div class="mlTopSummary"><h3>FAÇA AGORA</h3><div class="muted" id="mlDoNow">O DUO Task vai destacar aqui o anúncio que merece sua atenção primeiro.</div></div>
+<div class="mlOpsSummary">
+  <div class="mlOpsBox"><span>Fazer agora</span><b id="mlCountNow">0</b></div>
+  <div class="mlOpsBox"><span>Margem baixa</span><b id="mlCountMargin">0</b></div>
+  <div class="mlOpsBox"><span>Conversão baixa</span><b id="mlCountConv">0</b></div>
+  <div class="mlOpsBox"><span>Sem promoção</span><b id="mlCountPromo">0</b></div>
+</div>
+<div class="mlQuickFilters">
+  <button class="active" onclick="setMLQuickFilter('all',this)">Todos</button>
+  <button onclick="setMLQuickFilter('now',this)">Fazer agora</button>
+  <button onclick="setMLQuickFilter('margin',this)">Margem baixa</button>
+  <button onclick="setMLQuickFilter('conversion',this)">Conversão baixa</button>
+  <button onclick="setMLQuickFilter('promo',this)">Sem promoção</button>
+  <button onclick="setMLQuickFilter('stock',this)">Estoque baixo</button>
+</div>
 <div class="mlFilters"><button class="soft active" onclick="setMLFilter('all',this)">Todos</button><button class="soft" onclick="setMLFilter('urgent',this)">🔴 Urgentes</button><button class="soft" onclick="setMLFilter('improve',this)">🟡 Melhorar</button><button class="soft" onclick="setMLFilter('healthy',this)">🟢 Saudáveis</button></div>
       <div class="mlSplit">
 <div id="mlItemsList"></div>
@@ -446,7 +474,7 @@ let mlItems=[],mlFilter="all";
 function openMLPanel(){$("mlPanel").classList.add("show");loadMLStatus()}
 function closeMLPanel(){$("mlPanel").classList.remove("show")}
 function connectMercadoLivre(){location.href=ML_OAUTH+"?mode=start"}
-async function loadMLStatus(){if(!token)return;try{const r=await fetch(ML_DASH,{headers:{"Authorization":"Bearer "+token}}),x=await r.json();if(x.connected){$("mlDisconnected").style.display="none";$("mlConnected").style.display="block";$("mlNickname").textContent=x.nickname||"Mercado Livre";$("mlActiveItems").textContent=x.active_items??"—";$("mlUrgent").textContent=x.counts?.urgent??0;$("mlImprove").textContent=x.counts?.improve??0;$("mlHealthy").textContent=x.counts?.healthy??0;mlItems=x.items||[];await Promise.all([loadWholesaleForItems(),loadMLCosts()]);mergeMLCosts();renderMLItems()}else{$("mlDisconnected").style.display="block";$("mlConnected").style.display="none"}}catch(e){$("mlDisconnected").style.display="block";$("mlConnected").style.display="none"}}
+async function loadMLStatus(){if(!token)return;mlMarketCache={};try{const r=await fetch(ML_DASH,{headers:{"Authorization":"Bearer "+token}}),x=await r.json();if(x.connected){$("mlDisconnected").style.display="none";$("mlConnected").style.display="block";$("mlNickname").textContent=x.nickname||"Mercado Livre";$("mlActiveItems").textContent=x.active_items??"—";$("mlUrgent").textContent=x.counts?.urgent??0;$("mlImprove").textContent=x.counts?.improve??0;$("mlHealthy").textContent=x.counts?.healthy??0;mlItems=x.items||[];await Promise.all([loadWholesaleForItems(),loadMLCosts()]);mergeMLCosts();renderMLItems()}else{$("mlDisconnected").style.display="block";$("mlConnected").style.display="none"}}catch(e){$("mlDisconnected").style.display="block";$("mlConnected").style.display="none"}}
 async function loadMLCosts(){try{const r=await fetch(ML_COSTS,{headers:{"Authorization":"Bearer "+token}}),a=await r.json();mlCosts={};if(r.ok&&Array.isArray(a))a.forEach(x=>mlCosts[String(x.sku)]=Number(x.cost||0))}catch(e){mlCosts={}}}
 function mergeMLCosts(){mlItems.forEach(it=>{it.product_cost=it.sku&&mlCosts[it.sku]!=null?Number(mlCosts[it.sku]):null;const fee=Number(it.fee?.amount||0),price=Number(it.price||0),cost=Number(it.product_cost||0);it.net_estimate=it.product_cost==null?null:price-fee-cost;it.margin_estimate=it.product_cost==null||price<=0?null:(it.net_estimate/price)*100})}
 async function saveMLCost(sku){if(!sku)return alert("Este anúncio está sem SKU. Cadastre um SKU no Mercado Livre primeiro.");const input=document.getElementById("cost_"+CSS.escape(sku));const cost=Number(input?.value);if(!Number.isFinite(cost)||cost<0)return alert("Digite um custo válido.");try{const r=await fetch(ML_COSTS,{method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify({sku,cost})}),x=await r.json();if(!r.ok)throw Error(x.error||"Erro ao salvar custo");mlCosts[sku]=cost;mergeMLCosts();renderMLItems()}catch(e){alert(e.message)}}
@@ -461,17 +489,102 @@ function promoLabel(p){if(p?.has_active)return '<span class="mlPromoBadge mlProm
 function wholesaleLabel(w){if(w?.active){const t=(w.tiers||[])[0];return `<span class="mlPromoBadge mlPromoOn">✓ Atacado${t?.min_quantity?" a partir de "+t.min_quantity+" un.":""}</span>`}return '<span class="mlPromoBadge mlPromoOff">Sem preço de atacado</span>'}
 function catalogText(c){if(!c)return "Não está em competição de catálogo";const m={winning:"Ganhando catálogo",competing:"Perdendo catálogo",sharing_first_place:"Compartilhando 1º lugar",listed:"Listado no catálogo",not_listed:"Fora da competição"};return m[c.status]||c.status||"—"}
 function toggleMLDetails(btn){const card=btn.closest(".mlDiag");card.classList.toggle("expanded");btn.textContent=card.classList.contains("expanded")?"Ocultar análise":"Ver análise ⓘ"}
-async function analyzeMarket(itemId){const side=$("mlMarketSide");side.innerHTML='<div class="empty">Analisando mercado...</div>';try{let x=mlMarketCache[itemId];if(!x){const r=await fetch(ML_MARKET+"?item_id="+encodeURIComponent(itemId),{headers:{"Authorization":"Bearer "+token}});x=await r.json();if(!r.ok)throw Error(x.error||"Erro na análise");mlMarketCache[itemId]=x}renderMarketSide(x);renderMLItems()}catch(e){side.innerHTML=`<div class="marketEmpty"><b>Não consegui analisar</b><p>${esc(e.message||String(e))}</p></div>`}}
+async function analyzeMarket(itemId){const side=$("mlMarketSide");side.innerHTML='<div class="empty">Analisando mercado...</div>';try{const u=ML_MARKET+"?item_id="+encodeURIComponent(itemId)+"&_="+Date.now();const r=await fetch(u,{cache:"no-store",headers:{"Authorization":"Bearer "+token,"Cache-Control":"no-cache","Pragma":"no-cache"}});const x=await r.json();if(!r.ok)throw Error(x.error||"Erro na análise");mlMarketCache[itemId]=x;renderMarketSide(x);renderMLItems()}catch(e){side.innerHTML=`<div class="marketEmpty"><b>Não consegui analisar</b><p>${esc(e.message||String(e))}</p></div>`}}
 function renderMarketSide(x){const side=$("mlMarketSide");if(!side)return;const pct=x.pricing?.suggested_promo_percent??0;side.innerHTML=`<div class="marketHero"><div><h3>${esc(x.title||"Anúncio")}</h3><div class="muted">Análise de título + preço</div></div><div class="marketScore">${x.title_analysis?.score==null?"—":x.title_analysis.score+"%"}</div></div>
-<div class="marketPrices"><div class="marketPriceBox"><span>Preço médio</span><b>${fmtMoney(x.market?.average_price)}</b></div><div class="marketPriceBox"><span>Mediana</span><b>${fmtMoney(x.market?.median_price)}</b></div><div class="marketPriceBox"><span>Preço ideal</span><b>${fmtMoney(x.pricing?.ideal_price)}</b></div></div>
+<div class="marketPrices"><div class="marketPriceBox"><span>Preço médio</span><b>${fmtMoney(x.market?.average_price)}</b></div><div class="marketPriceBox"><span>Mediana</span><b>${fmtMoney(x.market?.median_price)}</b></div><div class="marketPriceBox"><span>Preço ideal</span><b>${fmtMoney(x.pricing?.ideal_price)}</b></div></div><div class="muted" style="font-size:11px;margin-top:-4px;margin-bottom:8px">Amostra: ${x.market?.sample_size??0} anúncios semelhantes</div>
 <div class="marketInsight"><b>Título</b><br>${(x.title_analysis?.notes||[]).map(n=>esc(n)).join("<br>")}</div>
 <div class="marketAction"><b>Preço / promoção</b><br>${x.pricing?.ideal_price?`Preço ideal estimado: <b>${fmtMoney(x.pricing.ideal_price)}</b>. `:""}${pct>0?`Promoção sugerida: aproximadamente <b>${pct.toFixed(1)}%</b>.`:"Seu preço já está próximo ou abaixo da referência calculada."}</div>
 ${x.promotion_candidates?.length?`<div class="marketInsight"><b>Oportunidade oficial do ML</b><br>${x.promotion_candidates.map(p=>`Preço sugerido: ${fmtMoney(p.suggested_discounted_price||p.min_discounted_price)}`).join("<br>")}</div>`:""}
 <div class="marketRefs"><b>Referências semelhantes</b>${(x.references||[]).slice(0,5).map(r=>`<div class="marketRef"><span>${esc(r.title)}</span><span>${fmtMoney(r.price)}</span></div>`).join("")}<div class="muted" style="margin-top:8px">${esc(x.method_note||"")}</div></div>`}
-function updateMLDoNow(){const rank={urgent:3,improve:2,healthy:1};const a=[...mlItems].sort((x,y)=>(rank[y.grade]||0)-(rank[x.grade]||0))[0];const el=$("mlDoNow");if(!el)return;if(!a){el.textContent="Nenhum anúncio ativo.";return}el.innerHTML=`<b>${esc(a.title)}</b> · SKU ${esc(a.sku||"Sem SKU")} — ${esc((a.alerts||[])[0]||"Sem alerta importante.")}`;if(!$("mlMarketSide")?.dataset.loaded){$("mlMarketSide").dataset.loaded="1";setTimeout(()=>analyzeMarket(a.id),100)}}
-function renderMLItems(){updateMLDoNow();if(!$("mlItemsList"))return;const items=mlItems.filter(x=>mlFilter==="all"||x.grade===mlFilter);$("mlItemsList").innerHTML=items.length?items.map(it=>`<div class="mlDiag">
-<div class="mlDiagTop"><img src="${esc(it.thumbnail||"")}" alt=""><div><div class="mlItemTitle">${esc(it.title)}</div><div class="mlItemMeta">${esc(it.id)} · <strong>SKU: ${esc(it.sku||"Sem SKU")}</strong> · ${esc(it.status||"")} · ${it.age_days==null?"idade desconhecida":it.age_days+" dia(s) ativo"}</div>${promoLabel(it.promotion)} ${wholesaleLabel(it.wholesale)}${it.permalink?`<div class="mlOpen"><a href="${it.permalink}" target="_blank" class="linkBtn">Abrir anúncio ↗</a></div>`:""}</div><span class="mlGrade ${gradeClass(it.grade)}">${gradeLabel(it.grade)}</span></div>
-<div class="mlDecisionRow"><div class="mlDecisionText"><b>${esc((it.alerts||[])[0]||"Nenhum alerta importante.")}</b><span>${esc((it.recommendations||[])[0]||"Sem ação necessária agora.")}</span><div class="mlMarketMini"><span>Mercado: <b>${mlMarketCache[it.id]?.market?.median_price?fmtMoney(mlMarketCache[it.id].market.median_price):"—"}</b></span><span>Ideal: <b>${mlMarketCache[it.id]?.pricing?.ideal_price?fmtMoney(mlMarketCache[it.id].pricing.ideal_price):"—"}</b></span></div><button class="mlSelectBtn" onclick="analyzeMarket('${it.id}')">Comparar mercado</button></div><div class="mlMoneyCompact"><b>Venda ${fmtMoney(it.price)}</b><span>${it.product_cost==null?"Cadastre o custo":`Sobra ${fmtMoney(it.net_estimate)}`}</span></div><button class="mlToggle" onclick="toggleMLDetails(this)">Ver análise ⓘ</button></div>
+
+let mlQuickFilter="all";
+function mlIntelligence(it){
+  const reasons=[], actions=[];
+  let score=0;
+
+  const margin = Number.isFinite(Number(it.margin_estimate)) ? Number(it.margin_estimate) : null;
+  const conv = Number.isFinite(Number(it.conversion_estimate)) ? Number(it.conversion_estimate) : null;
+  const visits = Number(it.visits_30d||0);
+  const stock = Number(it.available_quantity||0);
+  const sold = Number(it.sold_quantity||0);
+  const promoActive = !!it.promotion?.active;
+
+  if(margin!==null){
+    if(margin<8){score+=45; reasons.push("margem muito baixa"); actions.push("Revisar preço, custo ou promoção antes de vender mais.");}
+    else if(margin<15){score+=25; reasons.push("margem baixa"); actions.push("Ajustar preço ou reduzir desconto para proteger a margem.");}
+  }
+
+  if(visits>=20 && (conv===null || conv<1)){
+    score+=35; reasons.push("muitas visitas e pouca conversão"); actions.push("Priorizar título, foto principal e preço.");
+  } else if(visits>=10 && sold===0){
+    score+=25; reasons.push("visitas sem venda"); actions.push("Revisar oferta e apresentação do anúncio.");
+  }
+
+  if(!promoActive){
+    score+=12; reasons.push("sem promoção"); actions.push("Verificar se há oportunidade de promoção sem comprometer a margem.");
+  }
+
+  if(stock<=2){
+    score+=18; reasons.push("estoque baixo"); actions.push("Repor estoque para evitar perder posicionamento.");
+  }
+
+  if(!it.sku){
+    score+=8; reasons.push("sem SKU"); actions.push("Cadastrar SKU para facilitar controle e análise.");
+  }
+
+  const title = String(it.title||"");
+  if(title.length<35){
+    score+=10; reasons.push("título curto"); actions.push("Completar o título com termos realmente relevantes do produto.");
+  }
+  if(title.length>60){
+    score+=8; reasons.push("título muito longo"); actions.push("Enxugar o título e manter os termos mais importantes.");
+  }
+
+  let priority = "ok";
+  if(score>=45) priority="now";
+  else if(score>=20) priority="watch";
+
+  const unique = a => [...new Set(a)];
+  const mainAction = unique(actions)[0] || "Nenhuma ação importante agora.";
+  const mainReason = unique(reasons)[0] || "Anúncio saudável nos dados disponíveis.";
+
+  return {
+    score, priority, reasons:unique(reasons), actions:unique(actions),
+    mainAction, mainReason,
+    flags:{
+      margin: margin!==null && margin<15,
+      conversion: visits>=10 && (sold===0 || (conv!==null && conv<1)),
+      promo: !promoActive,
+      stock: stock<=2
+    }
+  };
+}
+function priorityLabel(p){return p==="now"?"Fazer agora":p==="watch"?"Acompanhar":"Saudável"}
+function priorityClass(p){return p==="now"?"pNow":p==="watch"?"pWatch":"pOk"}
+function setMLQuickFilter(f,b){
+  mlQuickFilter=f;
+  document.querySelectorAll(".mlQuickFilters button").forEach(x=>x.classList.remove("active"));
+  if(b)b.classList.add("active");
+  renderMLItems();
+}
+function matchesQuick(it){
+  const ai=mlIntelligence(it);
+  if(mlQuickFilter==="all")return true;
+  if(mlQuickFilter==="now")return ai.priority==="now";
+  return !!ai.flags[mlQuickFilter];
+}
+function updateMLSummary(){
+  const all=mlItems.map(it=>mlIntelligence(it));
+  const set=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+  set("mlCountNow",all.filter(x=>x.priority==="now").length);
+  set("mlCountMargin",all.filter(x=>x.flags.margin).length);
+  set("mlCountConv",all.filter(x=>x.flags.conversion).length);
+  set("mlCountPromo",all.filter(x=>x.flags.promo).length);
+}
+function updateMLDoNow(){updateMLSummary();const a=[...mlItems].sort((x,y)=>mlIntelligence(y).score-mlIntelligence(x).score)[0];const el=$("mlDoNow");if(!el)return;if(!a){el.textContent="Nenhum anúncio ativo.";return}const ai=mlIntelligence(a);el.innerHTML=`<b>${esc(a.title)}</b> · SKU ${esc(a.sku||"Sem SKU")} — ${esc(ai.mainReason)}. <strong>Ação: ${esc(ai.mainAction)}</strong>`;if($("mlMarketSide")&&!$("mlMarketSide").dataset.loaded){$("mlMarketSide").dataset.loaded="1";setTimeout(()=>analyzeMarket(a.id),100)}}
+function renderMLItems(){updateMLDoNow();if(!$("mlItemsList"))return;const items=mlItems.filter(x=>(mlFilter==="all"||x.grade===mlFilter)&&matchesQuick(x)).sort((a,b)=>mlIntelligence(b).score-mlIntelligence(a).score);$("mlItemsList").innerHTML=items.length?items.map(it=>`<div class="mlDiag">
+<div class="mlDiagTop"><img src="${esc(it.thumbnail||"")}" alt=""><div><div class="mlItemTitle">${esc(it.title)}</div><div style="margin:4px 0"><span class="mlPriorityPill ${priorityClass(mlIntelligence(it).priority)}">${priorityLabel(mlIntelligence(it).priority)} · ${mlIntelligence(it).score} pts</span></div><div class="mlItemMeta">${esc(it.id)} · <strong>SKU: ${esc(it.sku||"Sem SKU")}</strong> · ${esc(it.status||"")} · ${it.age_days==null?"idade desconhecida":it.age_days+" dia(s) ativo"}</div>${promoLabel(it.promotion)} ${wholesaleLabel(it.wholesale)}${it.permalink?`<div class="mlOpen"><a href="${it.permalink}" target="_blank" class="linkBtn">Abrir anúncio ↗</a></div>`:""}</div><span class="mlGrade ${gradeClass(it.grade)}">${gradeLabel(it.grade)}</span></div>
+<div class="mlDecisionRow"><div class="mlDecisionText"><b>${esc(mlIntelligence(it).mainReason)}</b><span>${esc(mlIntelligence(it).mainAction)}</span><div class="mlActionBox"><b>Por que está nessa prioridade?</b>${esc(mlIntelligence(it).reasons.join(" · ")||"Sem alertas relevantes.")}</div><div class="mlMarketMini"><span>Mercado: <b>${mlMarketCache[it.id]?.market?.median_price?fmtMoney(mlMarketCache[it.id].market.median_price):"—"}</b></span><span>Ideal: <b>${mlMarketCache[it.id]?.pricing?.ideal_price?fmtMoney(mlMarketCache[it.id].pricing.ideal_price):"—"}</b></span></div><button class="mlSelectBtn" onclick="analyzeMarket('${it.id}')">Comparar mercado</button></div><div class="mlMoneyCompact"><b>Venda ${fmtMoney(it.price)}</b><span>${it.product_cost==null?"Cadastre o custo":`Sobra ${fmtMoney(it.net_estimate)}`}</span></div><button class="mlToggle" onclick="toggleMLDetails(this)">Ver análise ⓘ</button></div>
 <div class="mlMetrics"><div class="mlMetric"><span>Preço</span><b>${fmtMoney(it.price)}</b></div><div class="mlMetric"><span>Estoque</span><b>${it.available_quantity??0}</b></div><div class="mlMetric"><span>Visitas 30d</span><b>${it.visits_30d??0}</b></div><div class="mlMetric"><span>Vendidos</span><b>${it.sold_quantity??0}</b></div><div class="mlMetric"><span>Conversão est.</span><b>${fmtPct(it.conversion_estimate)}</b></div><div class="mlMetric"><span>Catálogo</span><b>${esc(catalogText(it.catalog_competition))}</b></div></div>
 <div class="mlFinance"><div class="mlFinanceGrid">
 <div class="mlFinBox"><span>Taxa ML estimada</span><b>${fmtMoney(it.fee?.amount)}</b><div class="finSmall">${it.fee?.percent!=null?Number(it.fee.percent).toFixed(1)+"%":""}</div></div>
