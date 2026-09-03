@@ -826,12 +826,13 @@ function syncQuickFilter(){
 function render(){renderDaily();
  const shown=viewPerson||"Luisa + Enzo";
  $("subtitle").textContent=viewPerson?"Você está vendo o painel de "+shown+".":"Você está vendo todas as tarefas de Luisa e Enzo.";
- let q=$("search").value.toLowerCase(),f=$("filter").value,cf=$("clientFilter").value,s=$("sort").value;
+ let q=($("search")?.value||"").toLowerCase(),f=$("filter")?.value||"all",cf=$("clientFilter")?.value||"all",s=$("sort")?.value||"priority";
  let a=tasks.filter(t=>visibleByCompletionDay(t));
  if(viewPerson) a=a.filter(t=>t.assignee===viewPerson);
- if(quickFilter==="mine") a=a.filter(t=>t.assignee===me);
- else if(quickFilter==="other") a=a.filter(t=>t.assignee===other);
- if(searchTerm) a=a.filter(t=>(String(t.title||"")+" "+String(t.description||"")).toLowerCase().includes(searchTerm.toLowerCase()));
+ if(q) a=a.filter(t=>(String(t.title||"")+" "+String(t.description||"")+" "+String(t.client||"")).toLowerCase().includes(q));
+ if(cf!=="all") a=a.filter(t=>t.client===cf);
+ if(s==="date") a.sort((x,y)=>String(x.due_date||"9999").localeCompare(String(y.due_date||"9999")));
+ else a.sort((x,y)=>score(y)-score(x));
  const visibleBase=tasks.filter(t=>visibleByCompletionDay(t)&&(!viewPerson||t.assignee===viewPerson));
  const p=a.filter(x=>x.status==="pending"),d=a.filter(x=>x.status==="doing"),w=a.filter(x=>x.status==="waiting"),c=a.filter(x=>x.status==="done");
  $("p").innerHTML=p.map(card).join("")||'<div class="empty">Nada por aqui.</div>';
@@ -950,17 +951,6 @@ if("serviceWorker" in navigator){
 
 setTimeout(()=>{if(typeof mlItems!=="undefined"&&mlItems.length)loadMLPerformanceIntelligence()},2500);
 
-function ensureTaskBoardVisible(){
-  const active=tasks.filter(t=>visibleByCompletionDay(t));
-  if(!active.length)return;
-  const cols=["pendingList","doingList","waitingList","doneList"].map(id=>document.getElementById(id));
-  const hasCards=cols.some(c=>c&&c.querySelector(".task"));
-  if(!hasCards && (viewPerson||quickFilter)){
-    viewPerson="";
-    quickFilter="";
-    render();
-  }
-}
 
 </script>
 <script>
