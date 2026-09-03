@@ -547,6 +547,58 @@ async function loadMLPerformanceIntelligence(){
 }
 
 let mlQuickFilter="all";
+
+function mlLifecycleAnalysis(it){
+  const days=Number(it.age_days||0), visits=Number(it.visits_30d||0), sales=Number(it.sales_30d??it.sold_quantity??0);
+  const conv=Number.isFinite(Number(it.conversion_30d))?Number(it.conversion_30d):null;
+  const margin=Number.isFinite(Number(it.margin_estimate))?Number(it.margin_estimate):null;
+  const title=String(it.title||"").trim();
+  const attrs=Array.isArray(it.attributes)?it.attributes:[];
+  const filledAttrs=attrs.filter(a=>a?.value_name||a?.value_id).length;
+  const words=title.toLowerCase().split(/\s+/).filter(Boolean);
+  const weakTitle=title.length<38||words.length<6;
+  const weakFicha=attrs.length>0 && filledAttrs/attrs.length<.65;
+  let phase="",headline="",steps=[],level="ok";
+
+  if(days<=5){
+    phase="Lançamento";
+    headline="Ganhar dados, competitividade e visibilidade.";
+    steps.push("Se a margem permitir, entrar com preço/promoção competitiva. Use até ~30% apenas quando o preço anterior, a margem e as regras da campanha tornarem esse desconto real e sustentável.");
+    steps.push("Iniciar publicidade com estratégia mais competitiva: aceitar ACOS inicial maior / ROAS menor para gerar tráfego e dados, mas com limite de gasto.");
+    steps.push("Não fazer várias mudanças ao mesmo tempo: deixe o anúncio acumular dados antes de concluir que título ou oferta falharam.");
+    level="watch";
+  } else if(days<=7 && sales===0){
+    phase="Primeira revisão";
+    headline="Já houve tempo inicial e ainda não houve venda.";
+    steps.push("Se houve publicidade por cerca de 5 dias e cliques/visitas sem venda, não aumente orçamento automaticamente: primeiro revise conversão.");
+    steps.push("Comparar preço, promoção, foto principal, frete/oferta e título.");
+    steps.push("Revisar palavras-chave relevantes no título e preencher atributos/ficha técnica que ajudam o Mercado Livre a entender o produto.");
+    level="now";
+  } else if(visits>=20 && sales===0){
+    phase="Tráfego sem venda";
+    headline=`${visits} visitas e nenhuma venda: o gargalo tende a estar na oferta/conversão, não apenas em trazer mais tráfego.`;
+    steps.push("Priorizar preço, promoção, imagem principal, reputação/frete e qualidade do anúncio antes de aumentar Ads.");
+    steps.push("Reescrever o título com os termos essenciais do produto, sem repetição artificial.");
+    level="now";
+  } else if(conv!==null && visits>=20 && conv<1){
+    phase="Conversão baixa";
+    headline=`Conversão de ${conv.toFixed(2)}%: precisa melhorar a capacidade do anúncio de transformar visita em venda.`;
+    steps.push("Testar uma mudança por vez e medir novamente: oferta/preço → capa → título → conteúdo/atributos.");
+    level="now";
+  } else {
+    phase="Otimização";
+    headline="Continuar acompanhando conversão, margem e crescimento sem alterar o anúncio sem evidência.";
+    steps.push("Preservar o que está funcionando e testar melhorias de forma controlada.");
+  }
+
+  if(weakTitle) steps.push("Título parece pouco descritivo: conferir marca, produto/modelo, aplicação/compatibilidade e características realmente buscadas.");
+  if(weakFicha) steps.push("Ficha técnica incompleta: preencher atributos corretos e relevantes; atributos ajudam busca, filtros e entendimento do produto.");
+  steps.push("Na descrição, usar linguagem persuasiva e clara: benefício, aplicação, compatibilidade, conteúdo da embalagem e dúvidas comuns. Incluir termos de busca naturalmente, sem lista repetitiva de palavras-chave.");
+
+  if(margin!==null && margin<15) steps.unshift("Margem está apertada: não aplicar desconto ou Ads agressivo sem calcular o lucro líquido.");
+  return {phase,headline,steps:[...new Set(steps)].slice(0,7),level};
+}
+
 function mlIntelligence(it){
   const reasons=[],actions=[]; let score=0;
   const margin=Number.isFinite(Number(it.margin_estimate))?Number(it.margin_estimate):null;
@@ -591,7 +643,7 @@ function updateMLSummary(){
 function updateMLDoNow(){updateMLSummary();const a=[...mlItems].sort((x,y)=>mlIntelligence(y).score-mlIntelligence(x).score)[0];const el=$("mlDoNow");if(!el)return;if(!a){el.textContent="Nenhum anúncio ativo.";return}const ai=mlIntelligence(a);el.innerHTML=`<b>${esc(a.title)}</b> · SKU ${esc(a.sku||"Sem SKU")} — ${esc(ai.mainReason)}. <strong>Ação: ${esc(ai.mainAction)}</strong>`;if($("mlMarketSide")&&!$("mlMarketSide").dataset.loaded){$("mlMarketSide").dataset.loaded="1";setTimeout(()=>analyzeMarket(a.id),100)}}
 function renderMLItems(){updateMLDoNow();if(!$("mlItemsList"))return;const items=mlItems.filter(x=>(mlFilter==="all"||x.grade===mlFilter)&&matchesQuick(x)).sort((a,b)=>mlIntelligence(b).score-mlIntelligence(a).score);$("mlItemsList").innerHTML=items.length?items.map(it=>`<div class="mlDiag">
 <div class="mlDiagTop"><img src="${esc(it.thumbnail||"")}" alt=""><div><div class="mlItemTitle">${esc(it.title)}</div><div style="margin:4px 0"><span class="mlPriorityPill ${priorityClass(mlIntelligence(it).priority)}">${priorityLabel(mlIntelligence(it).priority)} · ${mlIntelligence(it).score} pts</span></div><div class="mlItemMeta">${esc(it.id)} · <strong>SKU: ${esc(it.sku||"Sem SKU")}</strong> · ${esc(it.status||"")} · ${it.age_days==null?"idade desconhecida":it.age_days+" dia(s) ativo"}</div>${promoLabel(it.promotion)} ${wholesaleLabel(it.wholesale)}${it.permalink?`<div class="mlOpen"><a href="${it.permalink}" target="_blank" class="linkBtn">Abrir anúncio ↗</a></div>`:""}</div><span class="mlGrade ${gradeClass(it.grade)}">${gradeLabel(it.grade)}</span></div>
-<div class="mlDecisionRow"><div class="mlDecisionText"><b>${esc(mlIntelligence(it).mainReason)}</b><span>${esc(mlIntelligence(it).mainAction)}</span><div class="mlActionBox"><b>Por que está nessa prioridade?</b>${esc(mlIntelligence(it).reasons.join(" · ")||"Sem alertas relevantes.")}</div>${it.conversion_30d!=null?`<div class="mlActionBox"><b>Conversão real — últimos 30 dias</b>${Number(it.conversion_30d).toFixed(2)}% · ${Number(it.sales_30d||0)} venda(s) / ${Number(it.visits_30d||0)} visitas${it.benchmark_conversion!=null?` · referência interna da categoria: ${Number(it.benchmark_conversion).toFixed(2)}%`:""}</div>`:""}${(it.best_seller_title_refs||[]).length?`<div class="mlActionBox"><b>Referência de títulos mais vendidos</b>${(it.best_seller_title_refs||[]).slice(0,2).map(x=>esc(x.title)).join(" · ")}</div>`:""}<div class="mlMarketMini"><span>Mercado: <b>${mlMarketCache[it.id]?.market?.median_price?fmtMoney(mlMarketCache[it.id].market.median_price):"—"}</b></span><span>Ideal: <b>${mlMarketCache[it.id]?.pricing?.ideal_price?fmtMoney(mlMarketCache[it.id].pricing.ideal_price):"—"}</b></span></div><button class="mlSelectBtn" onclick="analyzeMarket('${it.id}')">Comparar mercado</button></div><div class="mlMoneyCompact"><b>Venda ${fmtMoney(it.price)}</b><span>${it.product_cost==null?"Cadastre o custo":`Sobra ${fmtMoney(it.net_estimate)}`}</span></div><button class="mlToggle" onclick="toggleMLDetails(this)">Ver análise ⓘ</button></div>
+<div class="mlDecisionRow"><div class="mlDecisionText"><b>${esc(mlIntelligence(it).mainReason)}</b><span>${esc(mlIntelligence(it).mainAction)}</span><div class="mlActionBox"><b>Por que está nessa prioridade?</b>${esc(mlIntelligence(it).reasons.join(" · ")||"Sem alertas relevantes.")}</div><div class="mlActionBox"><b>Plano da IA · ${esc(mlLifecycleAnalysis(it).phase)}</b><strong>${esc(mlLifecycleAnalysis(it).headline)}</strong><div style="margin-top:5px">${mlLifecycleAnalysis(it).steps.map((s,i)=>`${i+1}. ${esc(s)}`).join("<br>")}</div></div>${it.conversion_30d!=null?`<div class="mlActionBox"><b>Conversão real — últimos 30 dias</b>${Number(it.conversion_30d).toFixed(2)}% · ${Number(it.sales_30d||0)} venda(s) / ${Number(it.visits_30d||0)} visitas${it.benchmark_conversion!=null?` · referência interna da categoria: ${Number(it.benchmark_conversion).toFixed(2)}%`:""}</div>`:""}${(it.best_seller_title_refs||[]).length?`<div class="mlActionBox"><b>Referência de títulos mais vendidos</b>${(it.best_seller_title_refs||[]).slice(0,2).map(x=>esc(x.title)).join(" · ")}</div>`:""}<div class="mlMarketMini"><span>Mercado: <b>${mlMarketCache[it.id]?.market?.median_price?fmtMoney(mlMarketCache[it.id].market.median_price):"—"}</b></span><span>Ideal: <b>${mlMarketCache[it.id]?.pricing?.ideal_price?fmtMoney(mlMarketCache[it.id].pricing.ideal_price):"—"}</b></span></div><button class="mlSelectBtn" onclick="analyzeMarket('${it.id}')">Comparar mercado</button></div><div class="mlMoneyCompact"><b>Venda ${fmtMoney(it.price)}</b><span>${it.product_cost==null?"Cadastre o custo":`Sobra ${fmtMoney(it.net_estimate)}`}</span></div><button class="mlToggle" onclick="toggleMLDetails(this)">Ver análise ⓘ</button></div>
 <div class="mlMetrics"><div class="mlMetric"><span>Preço</span><b>${fmtMoney(it.price)}</b></div><div class="mlMetric"><span>Estoque</span><b>${it.available_quantity??0}</b></div><div class="mlMetric"><span>Visitas 30d</span><b>${it.visits_30d??0}</b></div><div class="mlMetric"><span>Vendidos</span><b>${it.sold_quantity??0}</b></div><div class="mlMetric"><span>Conversão est.</span><b>${fmtPct(it.conversion_estimate)}</b></div><div class="mlMetric"><span>Catálogo</span><b>${esc(catalogText(it.catalog_competition))}</b></div></div>
 <div class="mlFinance"><div class="mlFinanceGrid">
 <div class="mlFinBox"><span>Taxa ML estimada</span><b>${fmtMoney(it.fee?.amount)}</b><div class="finSmall">${it.fee?.percent!=null?Number(it.fee.percent).toFixed(1)+"%":""}</div></div>
