@@ -827,12 +827,11 @@ function render(){renderDaily();
  const shown=viewPerson||"Luisa + Enzo";
  $("subtitle").textContent=viewPerson?"Você está vendo o painel de "+shown+".":"Você está vendo todas as tarefas de Luisa e Enzo.";
  let q=$("search").value.toLowerCase(),f=$("filter").value,cf=$("clientFilter").value,s=$("sort").value;
- let a=tasks.filter(t=>visibleByCompletionDay(t)&&(f==="all"||t.assignee===f)&&(cf==="all"||(t.client||"")===cf)&&((t.title||"").toLowerCase().includes(q)||(t.description||"").toLowerCase().includes(q)||(t.client||"").toLowerCase().includes(q)));
- if(smartFilter==="today")a=a.filter(isToday);
- if(smartFilter==="late")a=a.filter(overdue);
- if(smartFilter==="high")a=a.filter(t=>t.priority==="high");
- if(s==="due")a.sort((x,y)=>(x.due_date||"9999").localeCompare(y.due_date||"9999"));
- if(s==="priority"){let w={high:0,medium:1,low:2};a.sort((x,y)=>w[x.priority]-w[y.priority])}
+ let a=tasks.filter(t=>visibleByCompletionDay(t));
+ if(viewPerson) a=a.filter(t=>t.assignee===viewPerson);
+ if(quickFilter==="mine") a=a.filter(t=>t.assignee===me);
+ else if(quickFilter==="other") a=a.filter(t=>t.assignee===other);
+ if(searchTerm) a=a.filter(t=>(String(t.title||"")+" "+String(t.description||"")).toLowerCase().includes(searchTerm.toLowerCase()));
  const visibleBase=tasks.filter(t=>visibleByCompletionDay(t)&&(!viewPerson||t.assignee===viewPerson));
  const p=a.filter(x=>x.status==="pending"),d=a.filter(x=>x.status==="doing"),w=a.filter(x=>x.status==="waiting"),c=a.filter(x=>x.status==="done");
  $("p").innerHTML=p.map(card).join("")||'<div class="empty">Nada por aqui.</div>';
@@ -950,6 +949,19 @@ if("serviceWorker" in navigator){
 
 
 setTimeout(()=>{if(typeof mlItems!=="undefined"&&mlItems.length)loadMLPerformanceIntelligence()},2500);
+
+function ensureTaskBoardVisible(){
+  const active=tasks.filter(t=>visibleByCompletionDay(t));
+  if(!active.length)return;
+  const cols=["pendingList","doingList","waitingList","doneList"].map(id=>document.getElementById(id));
+  const hasCards=cols.some(c=>c&&c.querySelector(".task"));
+  if(!hasCards && (viewPerson||quickFilter)){
+    viewPerson="";
+    quickFilter="";
+    render();
+  }
+}
+
 </script>
 <script>
 window.addEventListener("load",()=>setTimeout(()=>loadMLPerformanceIntelligence(),3500));
